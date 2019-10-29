@@ -47,9 +47,9 @@ public class Guerrero {
     public void addDamage(String nombre,String damage){
         this.damage.replace(nombre, damage);
     }
-    public void rebajarVida(int cant){
-        this.vida = this.vida - cant;
-    }
+//    public void rebajarVida(int cant){
+//        this.vida = this.vida - cant;
+//    }
     public void recargarArmas(){
         
     }
