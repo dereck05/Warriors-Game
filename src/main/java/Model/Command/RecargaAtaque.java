@@ -9,7 +9,7 @@ package Model.Command;
  *
  * @author derec
  */
-public class RecargaArma implements ICommand {
+public class RecargaAtaque implements ICommand {
     
     @Override
     public void execute(){};
