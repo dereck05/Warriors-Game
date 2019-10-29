@@ -3,19 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Model.ServerImp;
+package Model.Client;
 
 
 
 import java.io.IOException;
 import java.util.Scanner;
-import Message.PostMessage;
-import Publisher.RSPublisher;
-import redsocial.CommsImplementations.Subscriber.RSSubscriber;
+import ServerImp.Message.PostMessage;
+import ServerImp.Publisher.WarriorsPublisher;
+import ServerImp.Subscriber.WarriorsSubscriber;
 
 
 public class PublisherClient {
-    private RSPublisher publisher;
+    private WarriorsPublisher publisher;
     private static Scanner scan;
     
     public static void main(String[] args) throws InterruptedException {
@@ -33,7 +33,7 @@ public class PublisherClient {
         scan = new Scanner(System.in);
         System.out.println("enter a topic");
         String topic = scan.nextLine();
-        publisher = new RSPublisher(topic, this);
+        publisher = new WarriorsPublisher(topic, this);
         Thread.sleep(3000);
 
         if(!publisher.isConnected()){
@@ -79,7 +79,7 @@ public class PublisherClient {
                     break;
                 case "3":
                     System.out.println("-------------------------------------");
-                    System.out.println("Suscribers: " + publisher.getSubscriberCount());
+                    System.out.println("Subscribers: " + publisher.getSubscriberCount());
                     System.out.println("Nivel: " + publisher.getNivel());
                     System.out.println("-------------------------------------");
                     break;
