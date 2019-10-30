@@ -22,37 +22,39 @@ import Model.Client.PublisherClient;
 
 
 public class WarriorsPublisher extends APublisher{
-    private List<PostMessage> posts;
+    private ArrayList<String> mensajes;
     private int subscriberCount = 0;
-    private int nivel = 0;
-    private PublisherClient client;
+   // private PublisherClient client;
 
-    public WarriorsPublisher(String topic, PublisherClient client) throws IOException{
+    public WarriorsPublisher(String topic) throws IOException{
         super(topic);
-        posts = new ArrayList();
-        this.client = client;
+        mensajes = new ArrayList();
+        //this.client = client;
     }
 
-    public List<PostMessage> getPosts() {
-        return posts;
+    public ArrayList<String> getPosts() {
+        return mensajes;
     }
 
     public int getSubscriberCount() {
         return subscriberCount;
     }
 
-    public int getNivel() {
-        return nivel;
+    public void addMensajes(String m){
+        this.mensajes.add(m);
     }
     
+    public ArrayList<String> getMensajes(){
+        return this.mensajes;
+    }
     
-    
+    /*
     public void buildPost(String content){
         PostMessage newPost = new PostMessage(this.getTopic(), content);
         this.posts.add(newPost);
         publish(newPost);
     }
-    
+    */
     public void quit(){
         try {
             WarriorsRequestMessage m = new WarriorsRequestMessage();
@@ -81,7 +83,8 @@ public class WarriorsPublisher extends APublisher{
             this.setConnected(m.isAcceptedConnection());
             System.out.println(m.getConnMessage());
         }
-        
+        //Aquí va toda la lógica
+        /*
         if(message instanceof FeedMessage){
             FeedMessage m = (FeedMessage) message;
             PostMessage original = this.posts.stream().
@@ -112,32 +115,20 @@ public class WarriorsPublisher extends APublisher{
                 Logger.getLogger(WarriorsPublisher.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+        */
+        //Suscriptores al juego
         if(message instanceof WarriorsRequestMessage){
             WarriorsRequestMessage m = (WarriorsRequestMessage) message;
             System.out.println(m.getRequestString());
             switch(m.getRequestId()){
                 
                 case 1:
-                    subscriberCount++;
-                    if(subscriberCount % 10 == 0){
-                        nivel++;
-                        //mandar mensaje
-                    }
-                        
+                    subscriberCount++; 
                     break;
-                case 2:
-                    if(subscriberCount % 10 == 0){
-                        nivel--;
-                        //mandar mensaje
-                    }
-                        
+                case 2:                      
                     subscriberCount--;
                     break;
-                case 3: 
-                    PostMessage reacted = this.posts.stream()
-                                            .filter(post -> post.getId()
-                                            .equals(m.getRequestString())).findAny().orElse(null);
+
                     
                     
                     

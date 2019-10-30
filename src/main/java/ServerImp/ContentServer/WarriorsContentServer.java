@@ -42,10 +42,12 @@ public class WarriorsContentServer extends AContentServer{
             try {
                 WarriorsRequestMessage m = (WarriorsRequestMessage) message;
                 switch(m.getRequestId()){
+                    //Jugadores en el juego
                     case 0: 
                         broadcastTopics(handler);
                         break;
-                    case 1: //subscribir
+                    //Unirse al juego
+                    case 1:
                         String topic = m.getRequestString();
                         this.registerSubscription(topic, handler);
                         PublisherHandler publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(topic)).findAny().orElse(null);
@@ -58,34 +60,17 @@ public class WarriorsContentServer extends AContentServer{
                         m2.setRequestId(0);
                         m2.setRequestString("Subscrito");
                         handler.sendMessage(m2);
-                        if(this.subscriptions.get(m.getRequestString()).size() % 10 == 0){
-                            m2 = new WarriorsRequestMessage();
-                            m2.setRequestId(0);
-                            m2.setRequestString(topic + " Alcanzó un múltiplo de 10 seguidores y subió un nivel");
-                            this.broadcastMessageSub(m2, topic);
-                            m2.setRequestString("Ud Alcanzó un múltiplo de 10 seguidores y subió un nivel");
-                            publisher.sendMessage(m2);
-                        }
                         break;
+                    //Salir del juego
                     case 2: 
                         
                         topic = m.getRequestString();
                         this.removeSubscription(topic, handler);
-                        publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(topic)).findAny().orElse(null);
-                        
+                        publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(topic)).findAny().orElse(null);                       
                         WarriorsRequestMessage m3 = new WarriorsRequestMessage();
                         m3.setRequestId(2);
                         m3.setRequestString("Subscriptor Perdido");
                         publisher.sendMessage(m3);
-                        
-                        if(this.subscriptions.get(m.getRequestString()).size() % 9 == 0){
-                            m3 = new WarriorsRequestMessage();
-                            m3.setRequestId(0);
-                            m3.setRequestString(topic + " Bajó de un múltiplo de 10 seguidores y perdió un nivel");
-                            this.broadcastMessageSub(m3, topic);
-                            m3.setRequestString("Ud bajó de un múltiplo de 10 seguidores y perdió un nivel");
-                            publisher.sendMessage(m3);
-                        }
                 }
             } catch (IOException ex) {
                 Logger.getLogger(WarriorsContentServer.class.getName()).log(Level.SEVERE, null, ex);
@@ -126,7 +111,6 @@ public class WarriorsContentServer extends AContentServer{
         for(String key : this.subscriptions.keySet()){
             m.getTopics().put(key, this.subscriptions.get(key).size());
         }
-        
         try {
             handler.sendMessage(m);
         } catch (IOException ex) {

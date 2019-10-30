@@ -3,7 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Model.ServerImp;
+package Model.Client;
+
+import ServerImp.ContentServer.WarriorsContentServer;
 
 /**
  *
@@ -15,6 +17,12 @@ public class WarriorsGame {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        try{
+            WarriorsContentServer wcs = new WarriorsContentServer();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
         // TODO code application logic here
     }
     

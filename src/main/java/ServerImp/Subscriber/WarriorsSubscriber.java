@@ -18,14 +18,15 @@ import ServerImp.Message.WarriorsConMessage;
 import ServerImp.Message.WarriorsRequestMessage;
 import ServerImp.Message.WarriorsTopicsMessage;
 import Model.Client.SubscriberClient;
+import Model.Client.Jugador;
 
 
 public class WarriorsSubscriber extends ASubscriber{
-
+    private Jugador jugador;
     private List<FeedMessage> feed;
-    SubscriberClient client;
+    Jugador client;
     
-    public WarriorsSubscriber(SubscriberClient client) throws IOException{
+    public WarriorsSubscriber(Jugador client) throws IOException{
         super();
         this.feed = new ArrayList();
         this.client = client;
@@ -33,6 +34,22 @@ public class WarriorsSubscriber extends ASubscriber{
 
     public List<FeedMessage> getFeed() {
         return feed;
+    }
+
+    public Jugador getJugador() {
+        return jugador;
+    }
+
+    public void setJugador(Jugador jugador) {
+        this.jugador = jugador;
+    }
+
+    public Jugador getClient() {
+        return client;
+    }
+
+    public void setClient(Jugador client) {
+        this.client = client;
     }
     
     
@@ -56,6 +73,7 @@ public class WarriorsSubscriber extends ASubscriber{
 
     @Override
     public void receivedMessage(AMessage message) {
+        //Conección
         if(message instanceof WarriorsConMessage){
             WarriorsConMessage m = (WarriorsConMessage) message;
             this.setConnected(m.isAcceptedConnection());
@@ -64,14 +82,14 @@ public class WarriorsSubscriber extends ASubscriber{
             if(this.isConnected())
                 this.setId(m.getId());
         }
-        
+        //Jugadores
         if(message instanceof WarriorsTopicsMessage){
             WarriorsTopicsMessage m = (WarriorsTopicsMessage) message;
             this.client.topics = m.getTopics();
 
             
         }
-        
+        //Jugadores
         if(message instanceof WarriorsRequestMessage){
             WarriorsRequestMessage m = (WarriorsRequestMessage) message;
             System.out.println(m.getRequestString());

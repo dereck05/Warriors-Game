@@ -33,7 +33,7 @@ public class PublisherClient {
         scan = new Scanner(System.in);
         System.out.println("enter a topic");
         String topic = scan.nextLine();
-        publisher = new WarriorsPublisher(topic, this);
+       // publisher = new WarriorsPublisher(topic, this);
         Thread.sleep(3000);
 
         if(!publisher.isConnected()){
@@ -41,7 +41,7 @@ public class PublisherClient {
             System.exit(0);
         }
 
-        run();
+       // run();
     }
     
     private void printMenu(){
@@ -55,7 +55,7 @@ public class PublisherClient {
         System.out.println("======================================");
     }
     
-    private void run(){
+ /*   private void run(){
         while(true){
             printMenu();
             String option = scan.nextLine();
@@ -97,5 +97,5 @@ public class PublisherClient {
             }
         }
        
-    }
+    }*/
 }

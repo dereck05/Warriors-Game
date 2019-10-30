@@ -17,8 +17,8 @@ import ServerImp.Subscriber.WarriorsSubscriber;
 public class SubscriberClient {
     private  WarriorsSubscriber subscriber;
     private  Scanner scan;
-    public  Map<String, Integer> topics;
-    
+    public  List<String> topics;
+    private Jugador jugador;
     public static void main(String[] args) throws InterruptedException {
         try {
             SubscriberClient client = new SubscriberClient();
@@ -33,14 +33,16 @@ public class SubscriberClient {
         scan = new Scanner(System.in);
             
             
-        subscriber= new WarriorsSubscriber(this);
+       // subscriber= new WarriorsSubscriber(this);
         Thread.sleep(3000);
 
         if(!subscriber.isConnected()){
+            
             System.out.println("Couldnt connect...");
             System.exit(0);
         }
-
+    //   this.jugador = new Jugador(subscriber.getId());
+        
         run();
     }
     
@@ -48,9 +50,10 @@ public class SubscriberClient {
         System.out.println("======================================");
         System.out.println("Subscriber: " + subscriber.getId());
         System.out.println("Opciones: ");
-        System.out.println("1) Subscribe");
-        System.out.println("2) Unsubscribe");
-        System.out.println("3) Feed");
+        System.out.println("1) Retar jugador: ");
+        System.out.println("2) Crear guerrero: ");
+        System.out.println("3) Crear armas: ");
+        System.out.println("4) Feed");
         System.out.println("======================================");
     }
     
@@ -65,19 +68,18 @@ public class SubscriberClient {
                     this.subscriber.askForTopics();
                     Thread.sleep(1000);
                     
-                    for (String key : topics.keySet()){
+                    for (String key : topics){
                         if(subscriber.getSubscriptions().contains(key)){
                             this.topics.remove(key);
                             break;
                         }
-                        System.out.print(key + " Followers:");
-                        System.out.println(topics.get(key));
+                        System.out.print(key);
 
                     }
                     System.out.println("-----------------------------------");
-                    System.out.println("enter name of publisher:");
+                    System.out.println("enter name of suscriber:");
                     String temp = scan.nextLine();
-                    if(topics.containsKey(temp)){
+                    if(topics.contains(temp)){
                         subscriber.subscribe(temp);
                     }
                     break;
