@@ -12,41 +12,46 @@ import java.util.HashMap;
  *
  * @author derec
  */
-public class Guerrero {
-    private ArrayList<Ataque> Ataques;
-    private HashMap<String,String> damage;
+public class Guerrero extends Personaje {
+    //Orden de los daños: Fuego-Aire-Agua-Magia blanca-Magia negra-Electricidad-Hielo-Acid-Espiritualidad-Hierro
+    private HashMap<Integer,ArrayList<Double>> damage;
     private Boolean activo;
+
+    public Guerrero(String nom, String img, Double life, Double golpexTiempo, Double level, Double campo, Double nivelAparic, Double cost, Double x, Double y, ArrayList<Ataque> ataqu, String tipo) {
+        super(nom, img, life, golpexTiempo, level, campo, nivelAparic, cost, x, y, ataqu, tipo);
+        damage = new HashMap<>();
+    }
     
-    public Guerrero(ArrayList<Ataque> a,HashMap<String,String> dam){
+    
+ /*   public Guerrero(ArrayList<Ataque> a,HashMap<String,String> dam){
         this.Ataques = a;
         this.damage = dam;
         this.activo = false;        //hasta que lo selecciono se activa
         
-    }
-    public void setAtaque(ArrayList<Ataque> a){
-        this.Ataques = a;
-    }
-    public void setDamage(HashMap<String,String> dam){
-        this.damage = dam;
+    }*/
+
+    public void setDamage(){
+        for(int i=0; i<this.getAtaques().size();i++){
+            ArrayList<Double> dañoTipo = new ArrayList<Double>();
+            for(int j=0; j<10; j++){
+                Double valorEntero = Math.floor(Math.random()*(100-20+1)+20);
+                dañoTipo.add(valorEntero);
+            }
+            damage.put(i, dañoTipo);
+        }
     }
     public void setActivo(Boolean act){
         this.activo = act;
     }
-    public ArrayList<Ataque> getAtaque(){
-        return this.Ataques;
-    }
-    public HashMap<String,String> getDamage(){
+
+    public HashMap<Integer,ArrayList<Double>> getDamage(){
         return this.damage ;
     }
     public Boolean getActivo(){
         return this.activo;
     }
-    public void addAtaque(Ataque a){
-        this.Ataques.add(a);
-    }
-    public void addDamage(String nombre,String damage){
-        this.damage.replace(nombre, damage);
-    }
+
+
 //    public void rebajarVida(int cant){
 //        this.vida = this.vida - cant;
 //    }

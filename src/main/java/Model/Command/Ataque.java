@@ -5,12 +5,17 @@
  */
 package Model.Command;
 
+import ServerImp.Publisher.WarriorsPublisher;
+
 /**
  *
  * @author derec
  */
 public class Ataque implements ICommand {
-    
+    private WarriorsPublisher juego;
+    public Ataque(WarriorsPublisher pJuego){
+        this.juego=pJuego;
+    }
     @Override
     public void execute(){};
     

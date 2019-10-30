@@ -5,11 +5,18 @@
  */
 package Model.Command;
 
+import ServerImp.Publisher.WarriorsPublisher;
+
 /**
  *
  * @author derec
  */
 public class Comodin  implements ICommand {
+    WarriorsPublisher juego;
+
+    public Comodin(WarriorsPublisher juego) {
+        this.juego = juego;
+    }
     
     @Override
     public void execute(){};

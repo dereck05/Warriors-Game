@@ -5,10 +5,18 @@
  */
 package Model.Command;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author derec
  */
 public class Invoker {
+    public void execute(ICommand command){      
+        CommandManager cm = CommandManager.getInstance();
+        cm.registerCommand(command);
+        ICommand c=cm.getCommand();
+        c.execute();
+    }
     
 }
