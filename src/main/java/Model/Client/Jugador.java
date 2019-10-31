@@ -6,10 +6,14 @@
 package Model.Client;
 
 import Model.Ataque;
+import Model.Command.AtaqueCommand;
+import Model.Command.ICommand;
+import Model.Command.Invoker;
 import Model.Guerrero;
 import Model.Personaje;
 import Model.Score;
 import Model.SuperFactory;
+import ServerImp.Message.AtaqueMessage;
 import ServerImp.Message.FeedMessage;
 import ServerImp.Publisher.WarriorsPublisher;
 import ServerImp.Subscriber.WarriorsSubscriber;
@@ -25,13 +29,14 @@ import java.util.Scanner;
  * @author derec
  */
 public class Jugador {
-    private WarriorsPublisher publisher;
+    public WarriorsPublisher publisher;
     private WarriorsSubscriber subscriber;
     private String id;
     private ArrayList<Guerrero> guerreros;
     private Score score;
     private String status;
     private  Scanner scan;
+    private String topic;
     public  Map<String,Integer> topics;
     
     
@@ -123,6 +128,8 @@ public class Jugador {
    
    }
    private void run() throws InterruptedException{
+       Invoker invoker = new Invoker();
+       ICommand comando;
         while(true){
             printMenu();
             String option = scan.nextLine();
@@ -162,13 +169,14 @@ public class Jugador {
                 case "crear juego nuevo":
                     try{
                     System.out.println("Ingrese el nombre del juego: ");
-                    String topic = scan.nextLine();
+                    this.topic = scan.nextLine();
                     publisher = new WarriorsPublisher(topic);
                     Thread.sleep(3000);
                     if(!publisher.isConnected()){
                         System.out.println("No se pudo crear el juego");
                         System.exit(0);
                     }else{
+                        subscriber.subscribe(topic);
                         System.out.println("Juego creado con éxito");
                     }
                     }
@@ -197,6 +205,8 @@ public class Jugador {
                     String temp = scan.nextLine();
                     if(topics.containsKey(temp)){
                         subscriber.subscribe(temp);
+                        this.topic=temp;
+                        
                     }
                   
                     /*System.out.println("-------------------------------------");
@@ -243,6 +253,33 @@ public class Jugador {
                     }*/
                     break;
                 case "atacar":
+                    System.out.println("Escoja el numero del guerrero que desea enviar a atacar: ");
+                    for(int i=0; i<guerreros.size();i++){
+                        System.out.println(i+1+" "+guerreros.get(i));
+                    }
+                    String temElegido = scan.nextLine();
+                    try{
+                        Integer elegido = Integer.parseInt(temElegido);
+                        Guerrero guerrero = guerreros.get(elegido-1);
+                        System.out.println("Escoje el número de arma que desea usar");
+                        for(int i=0; i<guerrero.getAtaques().size();i++){
+                            System.out.println(i+1+" "+guerrero.getAtaques().get(i));
+                        }
+                        String temAElegida = scan.nextLine();
+                        try{
+                            Integer elegida = Integer.parseInt(temAElegida);
+                            ArrayList<Double> daño = guerrero.getDamage().get(elegida-1);
+
+                            comando = new AtaqueCommand(subscriber,daño,this.topic);
+                            invoker.execute(comando);
+                        }
+                        catch(Exception e){
+                            System.out.println("Debe escoger entre las opciones anteriores");
+                        }
+                    }
+                    catch(Exception e){
+                        System.out.println("Debe escoger entre las opciones anteriores");
+                    }
                     break;
                 case "seleccionar jugador":
                     break;
