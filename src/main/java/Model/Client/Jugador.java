@@ -33,6 +33,17 @@ public class Jugador {
     private String status;
     private  Scanner scan;
     public  Map<String,Integer> topics;
+    
+    
+    
+    public static void main(String[] args) throws InterruptedException {
+        try {
+            Jugador client = new Jugador();
+            client.start();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
     public Jugador(){
         this.score= new Score();
         this.guerreros = new ArrayList<Guerrero>();
@@ -76,7 +87,9 @@ public class Jugador {
     public String getStatus(){
         return this.status;
     }
-    private void start() throws IOException, InterruptedException{         
+    private void start() throws IOException, InterruptedException{     
+        
+        scan = new Scanner(System.in);
         subscriber= new WarriorsSubscriber(this);
         Thread.sleep(3000);
 
@@ -142,7 +155,32 @@ public class Jugador {
                         g.setDamage();
                         guerreros.add(g);
                     }
-                   /* System.out.println("Publishers not subscribed to: ");
+                    System.out.println("Guerreros creados con éxito");
+                   
+                    break;
+                //Crear juego nuevo
+                case "crear juego nuevo":
+                    try{
+                    System.out.println("Ingrese el nombre del juego: ");
+                    String topic = scan.nextLine();
+                    publisher = new WarriorsPublisher(topic);
+                    Thread.sleep(3000);
+                    if(!publisher.isConnected()){
+                        System.out.println("No se pudo crear el juego");
+                        System.exit(0);
+                    }else{
+                        System.out.println("Juego creado con éxito");
+                    }
+                    }
+                    catch(Exception e){
+                        System.out.println("No se pudo crear el juego");
+                    }
+                    
+                  
+                    break;
+                //Unirse a juego existente
+                case "unirse a juego":
+                    System.out.println("Juegos disponibles: ");
                     System.out.println("----------------------------------");
                     this.subscriber.askForTopics();
                     Thread.sleep(1000);
@@ -152,34 +190,16 @@ public class Jugador {
                             this.topics.remove(key);
                             break;
                         }
-                        System.out.print(key + " Followers:");
-                        System.out.println(topics.get(key));
-
+                        System.out.print("Juego: "+key);
                     }
                     System.out.println("-----------------------------------");
-                    System.out.println("enter name of suscriber:");
+                    System.out.println("Ingrese el nombre del juego al que se desea unir:");
                     String temp = scan.nextLine();
                     if(topics.containsKey(temp)){
                         subscriber.subscribe(temp);
-                    }*/
-                    break;
-                //Crear juego nuevo
-                case "crear juego nuevo":
-                    System.out.println(".....................Subscriptions.......................");
-                    for (String topic : this.subscriber.getSubscriptions()){                      
-                        System.out.println(topic);
-                    }
-                    System.out.println("..................................................");
-                    System.out.println("enter name of publisher:");
-                    String temp2 = scan.nextLine();
-                    if(this.subscriber.getSubscriptions().contains(temp2)){
-                        subscriber.unsubscribe(temp2);
                     }
                   
-                    break;
-                //Unirse a juego existente
-                case "unirse a juego":
-                    System.out.println("-------------------------------------");
+                    /*System.out.println("-------------------------------------");
                     System.out.println("FEED");
                     System.out.println("-------------------------------------");
                     int i = 0;
@@ -220,7 +240,7 @@ public class Jugador {
                             }
                         }
                         
-                    }
+                    }*/
                     break;
                 case "atacar":
                     break;
@@ -241,16 +261,7 @@ public class Jugador {
                     System.out.println("opción invalida");
             }
         }}
-        public static void main(String[] args) throws InterruptedException {
-            try {
-                Jugador client = new Jugador();
-                client.start();
 
-            } catch (IOException ex) {
-                ex.printStackTrace();
-
-            }
-    }
        
     }
     
