@@ -10,6 +10,7 @@ import Model.Command.AtaqueCommand;
 import Model.Command.ICommand;
 import Model.Command.Invoker;
 import Model.Command.RecargaAtaque;
+import Model.Command.Rendirse;
 import Model.Command.SeleccionarJugador;
 import Model.Guerrero;
 import Model.Personaje;
@@ -301,6 +302,15 @@ public class Jugador {
                     }
                     break;
                 case "rendirse":
+                    try{
+                        comando = new Rendirse(subscriber,this.topic);
+                        invoker.execute(comando);
+                    }
+                    catch(Exception e){
+                        System.out.println("Debe escoger entre las opciones anteriores");
+                        e.printStackTrace();
+
+                    }
                     break;
                 case "pasar":
                     break;

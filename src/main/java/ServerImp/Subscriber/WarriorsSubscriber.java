@@ -19,6 +19,7 @@ import ServerImp.Message.WarriorsRequestMessage;
 import ServerImp.Message.WarriorsTopicsMessage;
 import Model.Client.SubscriberClient;
 import Model.Client.Jugador;
+import ServerImp.Message.ExitMessage;
 
 
 public class WarriorsSubscriber extends ASubscriber{
@@ -82,6 +83,11 @@ public class WarriorsSubscriber extends ASubscriber{
             if(this.isConnected())
                 this.setId(m.getId());
         }
+        if(message instanceof ExitMessage){
+            ExitMessage m = (ExitMessage) message;
+            System.out.println(m.getMensaje());
+        }
+      
         //Jugadores
         if(message instanceof WarriorsTopicsMessage){
             WarriorsTopicsMessage m = (WarriorsTopicsMessage) message;
