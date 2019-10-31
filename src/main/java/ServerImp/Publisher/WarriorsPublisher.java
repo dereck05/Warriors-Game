@@ -22,42 +22,40 @@ import Model.Client.PublisherClient;
 import ServerImp.Message.AtaqueMessage;
 import ServerImp.Message.ChatMessage;
 import ServerImp.Message.ComodinMessage;
+import ServerImp.Message.GanarMessage;
 
 
 public class WarriorsPublisher extends APublisher{
-    private ArrayList<String> mensajes;
+    private ArrayList<String> logs;
     private int subscriberCount = 0;
    // private PublisherClient client;
 
     public WarriorsPublisher(String topic) throws IOException{
         super(topic);
-        mensajes = new ArrayList();
+        logs = new ArrayList();
         //this.client = client;
     }
 
-    public ArrayList<String> getPosts() {
-        return mensajes;
-    }
 
     public int getSubscriberCount() {
         return subscriberCount;
     }
 
-    public void addMensajes(String m){
-        this.mensajes.add(m);
+    public void addLog(String m){
+        this.logs.add(m);
     }
     
-    public ArrayList<String> getMensajes(){
-        return this.mensajes;
+    public ArrayList<String> getLogs(){
+        return this.logs;
     }
     
     /*
-    public void buildPost(String content){
+    public void buildLog(){
         PostMessage newPost = new PostMessage(this.getTopic(), content);
         this.posts.add(newPost);
         publish(newPost);
-    }
-    */
+    }*/
+    
     public void quit(){
         try {
             WarriorsRequestMessage m = new WarriorsRequestMessage();
@@ -86,18 +84,10 @@ public class WarriorsPublisher extends APublisher{
             this.setConnected(m.isAcceptedConnection());
             System.out.println(m.getConnMessage());
         }
-        if(message instanceof AtaqueMessage){
-            AtaqueMessage m = (AtaqueMessage) message;
+        if(message instanceof AtaqueMessage || message instanceof ChatMessage || message instanceof ComodinMessage || message instanceof GanarMessage){
             this.publish(message);
         }
-        if (message instanceof ChatMessage){
-             ChatMessage m = (ChatMessage) message;
-            this.publish(message);
-        }
-        if(message instanceof ComodinMessage){
-            ComodinMessage m = (ComodinMessage) message;
-            this.publish(message);
-        }
+
         //Aquí va toda la lógica
         /*
         if(message instanceof FeedMessage){

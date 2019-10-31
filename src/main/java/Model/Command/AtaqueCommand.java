@@ -5,8 +5,10 @@
  */
 package Model.Command;
 
+import Model.Proxylog;
 import ServerImp.Message.AtaqueMessage;
 import ServerImp.Subscriber.WarriorsSubscriber;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 
@@ -28,7 +30,6 @@ public class AtaqueCommand implements ICommand {
     public void execute(){
         AtaqueMessage mensaje = new AtaqueMessage(this.topic,jugador.getId());
         mensaje.setDaño(daño);
-        jugador.sendMessage(mensaje);
-    };
+        jugador.sendMessage(mensaje);    };
         
 }

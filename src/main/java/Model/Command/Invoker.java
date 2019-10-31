@@ -5,6 +5,8 @@
  */
 package Model.Command;
 
+import Model.Proxylog;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 /**

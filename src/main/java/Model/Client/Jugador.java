@@ -329,6 +329,7 @@ public class Jugador {
                     else{
                         System.out.println("Comodin no disponible");
                     }
+                    locaDate = LocalDateTime.now();
                     break;
                 default:
                     System.out.println("opción invalida");

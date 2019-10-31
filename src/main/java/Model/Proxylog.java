@@ -9,6 +9,12 @@ package Model;
  *
  * @author derec
  */
-public class Proxylog {
+public class Proxylog implements ILog {
+
+    @Override
+    public void realizarLog(String log) {
+        
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }
