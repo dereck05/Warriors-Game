@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import ServerImp.Message.FeedMessage;
 import ServerImp.Message.GanarMessage;
+import ServerImp.Message.PasarMessage;
 import ServerImp.Message.PostMessage;
 import ServerImp.Message.WarriorsRequestMessage;
 import ServerImp.Message.WarriorsTopicsMessage;
@@ -45,6 +46,15 @@ public class WarriorsContentServer extends AContentServer{
         }
         if(message instanceof GanarMessage){
             GanarMessage m = (GanarMessage) message;
+            PublisherHandler publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(m.getTopic())).findAny().orElse(null);
+            try {
+                publisher.sendMessage(m);
+            } catch (IOException ex) {
+                Logger.getLogger(WarriorsContentServer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        if(message instanceof PasarMessage){
+            PasarMessage m = (PasarMessage) message;
             PublisherHandler publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(m.getTopic())).findAny().orElse(null);
             try {
                 publisher.sendMessage(m);
@@ -115,7 +125,7 @@ public class WarriorsContentServer extends AContentServer{
 
     @Override
     public void processPubMessage(AMessage message, PublisherHandler handler) {
-        if(message instanceof AtaqueMessage || message instanceof ComodinMessage || message instanceof ChatMessage || message instanceof GanarMessage){
+        if(message instanceof AtaqueMessage || message instanceof ComodinMessage || message instanceof ChatMessage || message instanceof GanarMessage || message instanceof PasarMessage){
             try {
                 // System.out.println("???");
                 this.broadcastMessageSub(message, handler.getTopic());

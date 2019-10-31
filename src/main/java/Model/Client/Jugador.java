@@ -11,6 +11,7 @@ import Model.Command.Chat;
 import Model.Command.Comodin;
 import Model.Command.ICommand;
 import Model.Command.Invoker;
+import Model.Command.PasoTurno;
 import Model.Guerrero;
 import Model.Personaje;
 import Model.Score;
@@ -45,6 +46,7 @@ public class Jugador {
     private String status;
     private  Scanner scan;
     private String topic;
+    public boolean actual;
     public  Map<String,Integer> topics;
     
     
@@ -197,6 +199,7 @@ public class Jugador {
                     catch(Exception e){
                         System.out.println("No se pudo crear el juego");
                     }
+                    actual=true;
                     
                   
                     break;
@@ -222,9 +225,10 @@ public class Jugador {
                         this.topic=temp;
                         
                     }
-                  
+                    actual=false;
                     break;
                 case "atacar":
+                    if(actual){
                     System.out.println("Escoja el numero del guerrero que desea enviar a atacar: ");
                     Guerrero guerrero = escogerGuerreros();
                     if(guerrero.equals(null)){
@@ -239,8 +243,14 @@ public class Jugador {
                             ArrayList<Double> daño = obtenerDañoArma(guerrero,numArma);
                             comando = new AtaqueCommand(subscriber,daño,topic,guerrero.getNombre(),guerrero.getAtaques().get(numArma).getNombre());
                             invoker.execute(comando);
-                            System.out.println("El ataque ha sido exitoso");    }   
+                            System.out.println("El ataque ha sido exitoso");    } 
+                        actual=false;
                         
+                    }
+                    
+                    }
+                    else{
+                        System.out.println("No es su turno");
                     }
                  
                     break;
@@ -249,6 +259,14 @@ public class Jugador {
                 case "rendirse":
                     break;
                 case "pasar":
+                    if(actual){
+                        comando = new PasoTurno(subscriber,topic);
+                        invoker.execute(comando);
+                        this.actual=false;
+                        System.out.println("Ahora es turno del siguiente jugador");}
+                    else{
+                        System.out.println("No puede pasar porque no es su turno");
+                    }
                     break;
                 case "salida mutua":
                     break;
@@ -298,6 +316,7 @@ public class Jugador {
                     }
                     break;
                 case "comodin":
+                    if(actual){
                     LocalDateTime locaDate1 = LocalDateTime.now();
                     int minutes = (int) ChronoUnit.MINUTES.between(locaDate, locaDate1);
                     if(minutes>=1){
@@ -343,11 +362,16 @@ public class Jugador {
                         comando = new Comodin(this.subscriber,this.topic,daño1,daño2,guerreros,armas);
                         invoker.execute(comando);
                         System.out.println("Comodin utilizado con exito");
+                        actual =false;
+                        locaDate = LocalDateTime.now();
                     }
                     else{
                         System.out.println("Comodin no disponible");
+                    } 
                     }
-                    locaDate = LocalDateTime.now();
+                    else{
+                        System.out.println("No es su turno");
+                    }
                     break;
                 default:
                     System.out.println("opción invalida");

@@ -23,6 +23,7 @@ import ServerImp.Message.AtaqueMessage;
 import ServerImp.Message.ChatMessage;
 import ServerImp.Message.ComodinMessage;
 import ServerImp.Message.GanarMessage;
+import ServerImp.Message.PasarMessage;
 import java.time.LocalDate;
 
 
@@ -83,29 +84,39 @@ public class WarriorsPublisher extends APublisher{
         if(message instanceof WarriorsConMessage){
             WarriorsConMessage m = (WarriorsConMessage) message;
             this.setConnected(m.isAcceptedConnection());
-            System.out.println(m.getConnMessage());
+            //System.out.println(m.getConnMessage());
+        }
+        if(message instanceof PasarMessage){
+            PasarMessage m = (PasarMessage) message;
+            date = LocalDate.now();
+            String log = "Comando: pasar, parametros(jugador: "+m.getJugador()+", pasar: paso turno), fecha: "+date;
+            logs.add(log);
+            this.publish(message);
+        
         }
         if(message instanceof AtaqueMessage){
             AtaqueMessage m = (AtaqueMessage) message;
             date = LocalDate.now();
-            String log = "Comando: atacar, "+"parametros (jugador: "+m.getJugador()+",  guererro: "+m.getGuerrero()+", arma: "+m.getArma()+", daño: "+m.getDaño().toString()+", fecha: "+date;
+            String log = "Comando: atacar, "+"parametros (jugador: "+m.getJugador()+",  guererro: "+m.getGuerrero()+", arma: "+m.getArma()+", daño: "+m.getDaño().toString()+"), fecha: "+date;
             logs.add(log);
             this.publish(message);
         }
         if(message instanceof ChatMessage){
             ChatMessage m= (ChatMessage) message;
-            String log = "Comando: mensaje, parametros (jugador: "+m.getJugador()+", mensaje: "+m.getContent();
+            date = LocalDate.now();
+            String log = "Comando: mensaje, parametros (jugador: "+m.getJugador()+", mensaje: "+m.getContent()+"), fecha: "+date;
             logs.add(log);
             this.publish(message);
         }
         if(message instanceof ComodinMessage){
             ComodinMessage m = (ComodinMessage) message;
+            date = LocalDate.now();
             if(m.getGuerreros().size()==2){
-                String log= "Comando: comodin, parametros (jugador: "+m.getJugador()+", guerreros: Guerrero 1: "+m.getGuerreros().get(0)+", arma: "+m.getArmas().get(0)+", daño:"+m.getDaño()+". Guerrero 2: "+m.getGuerreros().get(1)+" arma: "+m.getArmas().get(1)+" daño: "+m.getDaño1();
+                String log= "Comando: comodin, parametros (jugador: "+m.getJugador()+", guerreros: Guerrero 1: "+m.getGuerreros().get(0)+", arma: "+m.getArmas().get(0)+", daño:"+m.getDaño()+". Guerrero 2: "+m.getGuerreros().get(1)+" arma: "+m.getArmas().get(1)+" daño: "+m.getDaño1()+"), fecha: "+date;
                 logs.add(log);
             }
             else{
-                 String log= "Comando: comodin, parametros (jugador: "+m.getJugador()+", guerrero: "+m.getGuerreros().get(0)+", arma 1 : "+m.getArmas().get(0)+", daño:"+m.getDaño()+", arma 2: "+m.getArmas().get(1)+" daño: "+m.getDaño1();
+                 String log= "Comando: comodin, parametros (jugador: "+m.getJugador()+", guerrero: "+m.getGuerreros().get(0)+", arma 1 : "+m.getArmas().get(0)+", daño:"+m.getDaño()+", arma 2: "+m.getArmas().get(1)+" daño: "+m.getDaño1()+"), fecha: "+date;
                  logs.add(log);
             }
             
@@ -151,7 +162,7 @@ public class WarriorsPublisher extends APublisher{
         //Suscriptores al juego
         if(message instanceof WarriorsRequestMessage){
             WarriorsRequestMessage m = (WarriorsRequestMessage) message;
-            System.out.println(m.getRequestString());
+           // System.out.println(m.getRequestString());
             switch(m.getRequestId()){
                 
                 case 1:

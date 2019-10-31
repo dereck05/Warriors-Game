@@ -24,6 +24,7 @@ import ServerImp.Message.AtaqueMessage;
 import ServerImp.Message.ChatMessage;
 import ServerImp.Message.ComodinMessage;
 import ServerImp.Message.GanarMessage;
+import ServerImp.Message.PasarMessage;
 
 
 public class WarriorsSubscriber extends ASubscriber{
@@ -115,14 +116,16 @@ public class WarriorsSubscriber extends ASubscriber{
             if(m.getJugador().equals(this.getId())==false){
                 rebajarVida(m.getDaño());
                 evaluarPerdida(m.getTopic());
+                this.client.actual=true;
 
-            }
+        }
         }if(message instanceof ComodinMessage){
             ComodinMessage m = (ComodinMessage) message;
             if (m.getJugador().equals(this.getId())==false){
                 rebajarVida(m.getDaño());
                 rebajarVida(m.getDaño1());
                 evaluarPerdida(m.getTopic());
+                this.client.actual=true;
             }
         }
         if(message instanceof GanarMessage){
@@ -130,6 +133,13 @@ public class WarriorsSubscriber extends ASubscriber{
             if (m.getJugador().equals(this.getId())==false){
                 System.out.println(m.getContent());
                 client.getScore().addGane();
+            }
+        }
+        if(message instanceof PasarMessage){
+            PasarMessage m = (PasarMessage) message;
+            if(m.getJugador().equals(this.getId())==false){
+                System.out.println("El otro jugador a pasador de turno");
+                client.actual=true;
             }
         }
         
