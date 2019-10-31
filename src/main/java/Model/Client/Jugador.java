@@ -9,6 +9,8 @@ import Model.Ataque;
 import Model.Command.AtaqueCommand;
 import Model.Command.ICommand;
 import Model.Command.Invoker;
+import Model.Command.RecargaAtaque;
+import Model.Command.SeleccionarJugador;
 import Model.Guerrero;
 import Model.Personaje;
 import Model.Score;
@@ -130,6 +132,7 @@ public class Jugador {
    private void run() throws InterruptedException{
        Invoker invoker = new Invoker();
        ICommand comando;
+       String temelegido;
         while(true){
             printMenu();
             String option = scan.nextLine();
@@ -139,7 +142,7 @@ public class Jugador {
                     SuperFactory sf = new SuperFactory();
                     
                     System.out.println("Debe crear 4 guerreros");
-                    for (int i=1; i<=4;i++){
+                    for (int i=1; i<=2;i++){
                         System.out.println("-----------------------------------");
                         System.out.println("Ingrese el nombre del guerrero: ");
                         String tempNombre = scan.nextLine();
@@ -148,7 +151,7 @@ public class Jugador {
                         System.out.println("Ingrese el path con la  imagen del guerrero: ");
                         String tempPath = scan.nextLine();
                         ArrayList<Ataque> tempAtaque = new ArrayList<Ataque>();
-                        for(int j=1; j<=5;j++){
+                        for(int j=1; j<=1;j++){
                             System.out.println("Ingrese el nombre del arma: ");
                             String tempNombreArma = scan.nextLine();
                             System.out.println("Ingrese el path con la imagen del arma: ");
@@ -255,11 +258,11 @@ public class Jugador {
                 case "atacar":
                     System.out.println("Escoja el numero del guerrero que desea enviar a atacar: ");
                     for(int i=0; i<guerreros.size();i++){
-                        System.out.println(i+1+" "+guerreros.get(i));
+                        System.out.println(i+1+" "+guerreros.get(i).toString());
                     }
-                    String temElegido = scan.nextLine();
+                    temelegido = scan.nextLine();
                     try{
-                        Integer elegido = Integer.parseInt(temElegido);
+                        Integer elegido = Integer.parseInt(temelegido);
                         Guerrero guerrero = guerreros.get(elegido-1);
                         System.out.println("Escoje el número de arma que desea usar");
                         for(int i=0; i<guerrero.getAtaques().size();i++){
@@ -282,6 +285,20 @@ public class Jugador {
                     }
                     break;
                 case "seleccionar jugador":
+                    System.out.println("Escoja el numero del guerrero que desea ver: ");
+                    for(int i=0; i<guerreros.size();i++){
+                        System.out.println(i+1+" "+guerreros.get(i).getNombre());
+                    }
+                    temelegido = scan.nextLine();
+                    try{
+                        comando = new SeleccionarJugador(subscriber,temelegido);
+                        invoker.execute(comando);
+                    }
+                    catch(Exception e){
+                        System.out.println("Debe escoger entre las opciones anteriores");
+                        e.printStackTrace();
+
+                    }
                     break;
                 case "rendirse":
                     break;
@@ -292,6 +309,22 @@ public class Jugador {
                 case "enviar mensaje":
                     break;
                 case "recargar":
+                    System.out.println("Escoja el numero del guerrero que desea enviar a atacar: ");
+                    for(int i=0; i<guerreros.size();i++){
+                        System.out.println(i+1+" "+guerreros.get(i).toString());
+                    }
+                    temelegido = scan.nextLine();
+                    try{
+                        comando = new RecargaAtaque(subscriber,temelegido);
+                        invoker.execute(comando);
+                    }
+                    catch(Exception e){
+                        System.out.println("Debe escoger entre las opciones anteriores");
+                        e.printStackTrace();
+
+                    }
+                    
+                    subscriber.getClient().guerreros.get(0).getAtaques().get(0).getEstado();
                     break;
                     
                 default:

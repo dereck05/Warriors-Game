@@ -5,11 +5,23 @@
  */
 package Model.Command;
 
+import Model.Client.SubscriberClient;
+import ServerImp.Publisher.WarriorsPublisher;
+import ServerImp.Subscriber.WarriorsSubscriber;
+
 /**
  *
  * @author derec
  */
 public class Rendirse implements ICommand {
+    
+    private WarriorsPublisher juego;
+    private WarriorsSubscriber cliente;
+    
+    public Rendirse(WarriorsPublisher pJuego,WarriorsSubscriber cl){
+        this.juego=pJuego;
+        this.cliente = cl;
+    }
     
     @Override
     public void execute(){};
