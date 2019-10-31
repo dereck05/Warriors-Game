@@ -13,11 +13,14 @@ import Message.AMessage;
  */
 public class ChatMessage extends AMessage{
     private String id;
+    private String asunto;
     private String content;
-    public ChatMessage(String topic, String content) {
+    private String jugador;
+    public ChatMessage(String topic, String content,String jugador) {
         super(topic);
         this.content=content;
         this.id = java.time.LocalDateTime.now().toString();
+        this.jugador=jugador;
         
     }
     public String getId() {
@@ -34,6 +37,22 @@ public class ChatMessage extends AMessage{
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getJugador() {
+        return jugador;
+    }
+
+    public void setJugador(String jugador) {
+        this.jugador = jugador;
+    }
+
+    public String getAsunto() {
+        return asunto;
+    }
+
+    public void setAsunto(String asunto) {
+        this.asunto = asunto;
     }
     
     

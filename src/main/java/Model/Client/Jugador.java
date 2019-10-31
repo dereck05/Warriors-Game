@@ -220,48 +220,6 @@ public class Jugador {
                         
                     }
                   
-                    /*System.out.println("-------------------------------------");
-                    System.out.println("FEED");
-                    System.out.println("-------------------------------------");
-                    int i = 0;
-                    for(FeedMessage post : this.subscriber.getFeed()){
-                        System.out.println(i + ")");
-                        System.out.println(post.getPost().getContent());
-                        System.out.println("Likes: " + post.getPost().getLikes());
-                        System.out.println("Dislikes: " + post.getPost().getDislikes());
-                        
-                        System.out.println("My Reaction: " + post.isLiked());
-                        i++;
-                    }
-                    System.out.println("-------------------------------------");
-                    System.out.println("React to one? y/n");
-                    String temp3 = scan.nextLine();
-                    if (temp3.equals("y")){
-                        System.out.println("Which one?");
-                        temp3 = scan.nextLine();
-                        if(temp3.compareTo("0")>=0 && temp3.compareTo("" + i)<0){
-                            int j = Integer.parseInt(temp3);
-                            System.out.println("Like (l) or dislike(d)?");
-                            temp3 = scan.nextLine();
-                            boolean pliked = this.subscriber.getFeed().get(j).isLiked();
-                            boolean preacted = this.subscriber.getFeed().get(j).isReacted();
-                            if(temp3.equals("l")){
-                                this.subscriber.getFeed().get(j).setLiked(true);
-                                this.subscriber.getFeed().get(j).setReacted(true);
-                            }
-                            if(temp3.equals("d")){
-                                this.subscriber.getFeed().get(j).setLiked(false);
-                                this.subscriber.getFeed().get(j).setReacted(true);
-                            }
-                            if((this.subscriber.getFeed().get(j).isLiked() == !pliked || 
-                                    preacted == false) && (temp3.equals("l") || temp3.equals("d"))){
-                                
-                                this.subscriber.getFeed().get(j).setInterchanged(preacted);
-                                this.subscriber.sendMessage(this.subscriber.getFeed().get(j));
-                            }
-                        }
-                        
-                    }*/
                     break;
                 case "atacar":
                     System.out.println("Escoja el numero del guerrero que desea enviar a atacar: ");
@@ -290,6 +248,8 @@ public class Jugador {
                 case "salida mutua":
                     break;
                 case "enviar mensaje":
+                    
+                    
                     break;
                 case "recargar":
                     break;
