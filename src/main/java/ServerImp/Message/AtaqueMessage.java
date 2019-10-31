@@ -8,33 +8,27 @@ package ServerImp.Message;
 import Message.AMessage;
 import Model.Ataque;
 import Model.Guerrero;
+import java.util.ArrayList;
 
 /**
  *
  * @author maryp
  */
 public class AtaqueMessage extends AMessage {
-    private Guerrero guerrero;
-    private Ataque arma;
+    private ArrayList<Double> daño;
     public AtaqueMessage(String topic) {
         super(topic);
     }
 
-    public Guerrero getGuerrero() {
-        return guerrero;
+    public ArrayList<Double> getDaño() {
+        return daño;
     }
 
-    public void setGuerrero(Guerrero guerrero) {
-        this.guerrero = guerrero;
+    public void setDaño(ArrayList<Double> daño) {
+        this.daño = daño;
     }
 
-    public Ataque getArma() {
-        return arma;
-    }
 
-    public void setArma(Ataque arma) {
-        this.arma = arma;
-    }
     
     
 }
