@@ -24,6 +24,7 @@ import ServerImp.Message.AtaqueMessage;
 import ServerImp.Message.ChatMessage;
 import ServerImp.Message.ComodinMessage;
 import ServerImp.Message.GanarMessage;
+import ServerImp.Message.LogMessage;
 import ServerImp.Message.PasarMessage;
 
 
@@ -126,6 +127,12 @@ public class WarriorsSubscriber extends ASubscriber{
                 rebajarVida(m.getDaño1());
                 evaluarPerdida(m.getTopic());
                 this.client.actual=true;
+            }
+        }
+        if(message instanceof LogMessage){
+            LogMessage m = (LogMessage) message;
+            if(m.getJugador().equals(this.getId())){
+                this.client.logs = m.getLogs();
             }
         }
         if(message instanceof GanarMessage){

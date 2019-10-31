@@ -23,6 +23,7 @@ import ServerImp.Message.AtaqueMessage;
 import ServerImp.Message.ChatMessage;
 import ServerImp.Message.ComodinMessage;
 import ServerImp.Message.GanarMessage;
+import ServerImp.Message.LogMessage;
 import ServerImp.Message.PasarMessage;
 import java.time.LocalDate;
 
@@ -85,6 +86,11 @@ public class WarriorsPublisher extends APublisher{
             WarriorsConMessage m = (WarriorsConMessage) message;
             this.setConnected(m.isAcceptedConnection());
             //System.out.println(m.getConnMessage());
+        }
+        if (message instanceof LogMessage){
+            LogMessage m = (LogMessage) message;
+            m.setLogs(logs);
+            this.publish(m);
         }
         if(message instanceof PasarMessage){
             PasarMessage m = (PasarMessage) message;

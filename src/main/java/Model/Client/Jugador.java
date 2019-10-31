@@ -18,6 +18,7 @@ import Model.Score;
 import Model.SuperFactory;
 import ServerImp.Message.AtaqueMessage;
 import ServerImp.Message.FeedMessage;
+import ServerImp.Message.LogMessage;
 import ServerImp.Publisher.WarriorsPublisher;
 import ServerImp.Subscriber.WarriorsSubscriber;
 import java.io.IOException;
@@ -48,7 +49,7 @@ public class Jugador {
     private String topic;
     public boolean actual;
     public  Map<String,Integer> topics;
-    
+    public ArrayList<String>logs;
     
     
     public static void main(String[] args) throws InterruptedException {
@@ -63,6 +64,7 @@ public class Jugador {
         this.score= new Score();
         this.mensajes=new HashMap<>();
         this.guerreros = new ArrayList<Guerrero>();
+        this.logs = new ArrayList<String>();
         this.status="activo";
     }
     public Jugador(String i, WarriorsPublisher pPublisher){
@@ -137,6 +139,9 @@ public class Jugador {
         System.out.println("recargar");  
         System.out.println("ver mis personajes");
         System.out.println("comodin");
+        System.out.println("obtener log");
+        System.out.println("mi estatus");
+        System.out.println("jugador estatus");
         System.out.println("======================================");
    
    }
@@ -372,6 +377,25 @@ public class Jugador {
                     else{
                         System.out.println("No es su turno");
                     }
+                    break;
+                case "obtener log":
+                    LogMessage m =new LogMessage(topic,this.subscriber.getId());
+                    this.subscriber.sendMessage(m);
+                    Thread.sleep(3000);
+                    
+                    for (String log : logs){
+                        System.out.println(log);
+                    }
+                    break;
+                case "mi estatus":
+                    System.out.println("Ganadas: "+this.score.getGanes());
+                    System.out.println("Perdidas: "+this.score.getPerdidas());
+                    System.out.println("Ataques exitosos: "+this.score.getAtaquesExitosos());
+                    System.out.println("Ataques fracasados: "+this.score.getAtaquesFracasados());
+                    System.out.println("Rendiciones: "+this.score.getRendiciones());
+                    System.out.println("Muertes: "+this.score.getMuertes());
+                    break;
+                case "jugador estatus":
                     break;
                 default:
                     System.out.println("opción invalida");
