@@ -390,8 +390,8 @@ public class Jugador {
                 case "obtener log":
                     LogMessage m =new LogMessage(topic,this.subscriber.getId());
                     this.subscriber.sendMessage(m);
-                    Thread.sleep(3000);
-                    
+                    Thread.sleep(5000);
+                    System.out.println("\t----------------jugador estatus---------------------");
                     for (String log : logs){
                         System.out.println(log);
                     }

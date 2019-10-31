@@ -153,12 +153,16 @@ public class WarriorsSubscriber extends ASubscriber{
         if(message instanceof ScoreMessage){
             ScoreMessage m = (ScoreMessage) message;
             if(m.getSocre()==null){
+              //  System.out.println("Pedir score");
                 if(m.getJugador().equals(this.getId())==false){
+                 //   System.out.println("Del otro jugador");
                     m.setSocre(client.getScore());
                     this.sendMessage(m);}
             }
             else{
+               // System.out.println("Recibir score");
                 if(m.getJugador().equals(this.getId())){
+                  //  System.out.println("Al que lo pidió");
                     client.setScoreOtroJugador(m.getSocre());
                 }
             }
@@ -249,18 +253,19 @@ public class WarriorsSubscriber extends ASubscriber{
                 break;
 
         }
-        if(porcentajeDaño>=100){
-            client.getScore().addAtaqueExitoso();
-        }
-        else{
-            client.getScore().addAtaqueFracasado();
-        }
+
         if(client.getGuerreros().get(i).getVida()<=0){
             client.getGuerreros().get(i).setVida(0.0);
             client.getGuerreros().get(i).setActivo(false);
             client.getScore().addMuerte();
             System.out.println(client.getGuerreros().get(i).getNombre()+" ha muerto");
         }
+        }
+        if(porcentajeDaño>=100){
+            client.getScore().addAtaqueExitoso();
+        }
+        else{
+            client.getScore().addAtaqueFracasado();
         }
     }
     public void evaluarPerdida(String topic){
