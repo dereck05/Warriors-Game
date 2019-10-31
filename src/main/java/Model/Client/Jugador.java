@@ -231,11 +231,13 @@ public class Jugador {
                         System.out.println("Ataque erroneo");
                     }
                     else{
-                        ArrayList<Double> daño= escogerArma(guerrero);
-                        if(daño.isEmpty()){
+                        int numArma = escogerArma(guerrero);
+                       // ArrayList<Double> daño= escogerArma(guerrero);
+                        if(numArma<0){
                             System.out.println("Ataque erroneo");
                         }else{
-                            comando = new AtaqueCommand(subscriber,daño,topic);
+                            ArrayList<Double> daño = obtenerDañoArma(guerrero,numArma);
+                            comando = new AtaqueCommand(subscriber,daño,topic,guerrero.getNombre(),guerrero.getAtaques().get(numArma).getNombre());
                             invoker.execute(comando);
                             System.out.println("El ataque ha sido exitoso");    }   
                         
@@ -303,26 +305,42 @@ public class Jugador {
                         System.out.println("1. Usar dos personajes.");
                         System.out.println("2. Usar dos armas.");
                         String tempOpcion = scan.nextLine();
+                        int arma1;
+                        int arma2;
                         ArrayList<Double> daño1= new ArrayList<Double>();
                         ArrayList<Double> daño2= new ArrayList<Double>();
+                        ArrayList<String> guerreros = new ArrayList<String>();
+                        ArrayList<String> armas = new ArrayList<String>();
                         switch(tempOpcion){
                             case "1":
                                 System.out.println("\t------------------PRIMER GUERRERO------------------");
                                 Guerrero gue1 = escogerGuerreros();
-                                daño1 =escogerArma(gue1);
+                                arma1 =escogerArma(gue1);
+                                daño1= obtenerDañoArma(gue1,arma1);
                                 System.out.println("\t------------------SEGUNDO GUERRERO------------------");
                                 Guerrero gue2 = escogerGuerreros();
-                                daño2 = escogerArma(gue2);
+                                arma2 = escogerArma(gue2);
+                                daño2 =obtenerDañoArma(gue2,arma2);
+                                guerreros.add(gue1.getNombre());
+                                guerreros.add(gue2.getNombre());
+                                armas.add(gue1.getAtaques().get(arma1).getNombre());
+                                armas.add(gue2.getAtaques().get(arma2).getNombre());
                                 break;
                             case "2":
                                 System.out.println("\t------------------------ESCOGER GUERRERO-----------------------");
                                 Guerrero guee = escogerGuerreros();
                                 System.out.println("\t------------------------ESCOGER ARMAS-----------------------");
-                                daño1 = escogerArma(guee);
-                                daño2 = escogerArma(guee);
+                                arma1 = escogerArma(guee);
+                                daño1 =obtenerDañoArma(guee,arma1);
+                                arma2 = escogerArma(guee);
+                                daño2=obtenerDañoArma(guee,arma2);
+                                guerreros.add(guee.getNombre());
+                                armas.add(guee.getAtaques().get(arma1).getNombre());
+                                armas.add(guee.getAtaques().get(arma2).getNombre());
                                 break;
                         }
-                        comando = new Comodin(this.subscriber,this.topic,daño1,daño2);
+                        
+                        comando = new Comodin(this.subscriber,this.topic,daño1,daño2,guerreros,armas);
                         invoker.execute(comando);
                         System.out.println("Comodin utilizado con exito");
                     }
@@ -354,8 +372,8 @@ public class Jugador {
 
     }
     
-     public ArrayList<Double> escogerArma(Guerrero guerrero){
-            ArrayList<Double> daño = new ArrayList<Double>();
+     public int escogerArma(Guerrero guerrero){
+            int escogida = -1;
             System.out.println("Escoja el número de arma que desea usar");
             System.out.println(guerrero.getAtaques().size());
             for(int j=0; j<guerrero.getAtaques().size();j++){
@@ -365,16 +383,20 @@ public class Jugador {
             String temAElegida = scan.nextLine();
             try{
                 Integer elegida = Integer.parseInt(temAElegida);
-                daño = guerrero.getDamage().get(elegida);
+               // daño = guerrero.getDamage().get(elegida);
                 guerrero.getAtaques().get(elegida).setEstado("inactiva");
-                return daño;
+                return elegida;
             }
             catch(Exception e){
                 e.printStackTrace();
                 System.out.println("Error al realizar el ataque");
             }
-            return daño;
+            return escogida;
      }  
+     public ArrayList<Double> obtenerDañoArma(Guerrero guerrero,int escogida){
+         ArrayList<Double> daño = guerrero.getDamage().get(escogida);
+         return daño;
+     }
     }
     
     

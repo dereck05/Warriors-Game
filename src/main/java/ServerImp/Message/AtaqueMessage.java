@@ -17,6 +17,8 @@ import java.util.ArrayList;
 public class AtaqueMessage extends AMessage {
     private ArrayList<Double> daño;
     private String jugador;
+    private String guerrero;
+    private String arma;
     public AtaqueMessage(String topic,String pJugador) {
         super(topic);
         this.jugador=pJugador;
@@ -37,7 +39,18 @@ public class AtaqueMessage extends AMessage {
     public void setJugador(String jugador) {
         this.jugador = jugador;
     }
-    
+    public String getGuerrero(){
+        return this.guerrero;
+    }
+    public void setGuerrero(String guerrero){
+        this.guerrero=guerrero;
+    }
+    public String getArma(){
+        return this.arma;
+    }
+    public void setArma(String arma){
+        this.arma=arma;
+    }
 
     
     

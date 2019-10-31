@@ -23,6 +23,7 @@ import ServerImp.Message.AtaqueMessage;
 import ServerImp.Message.ChatMessage;
 import ServerImp.Message.ComodinMessage;
 import ServerImp.Message.GanarMessage;
+import java.time.LocalDate;
 
 
 public class WarriorsPublisher extends APublisher{
@@ -78,13 +79,39 @@ public class WarriorsPublisher extends APublisher{
 
     @Override
     public void receivedMessage(AMessage message) {
-       
+       LocalDate date;
         if(message instanceof WarriorsConMessage){
             WarriorsConMessage m = (WarriorsConMessage) message;
             this.setConnected(m.isAcceptedConnection());
             System.out.println(m.getConnMessage());
         }
-        if(message instanceof AtaqueMessage || message instanceof ChatMessage || message instanceof ComodinMessage || message instanceof GanarMessage){
+        if(message instanceof AtaqueMessage){
+            AtaqueMessage m = (AtaqueMessage) message;
+            date = LocalDate.now();
+            String log = "Comando: atacar, "+"parametros (jugador: "+m.getJugador()+",  guererro: "+m.getGuerrero()+", arma: "+m.getArma()+", daño: "+m.getDaño().toString()+", fecha: "+date;
+            logs.add(log);
+            this.publish(message);
+        }
+        if(message instanceof ChatMessage){
+            ChatMessage m= (ChatMessage) message;
+            String log = "Comando: mensaje, parametros (jugador: "+m.getJugador()+", mensaje: "+m.getContent();
+            logs.add(log);
+            this.publish(message);
+        }
+        if(message instanceof ComodinMessage){
+            ComodinMessage m = (ComodinMessage) message;
+            if(m.getGuerreros().size()==2){
+                String log= "Comando: comodin, parametros (jugador: "+m.getJugador()+", guerreros: Guerrero 1: "+m.getGuerreros().get(0)+", arma: "+m.getArmas().get(0)+", daño:"+m.getDaño()+". Guerrero 2: "+m.getGuerreros().get(1)+" arma: "+m.getArmas().get(1)+" daño: "+m.getDaño1();
+                logs.add(log);
+            }
+            else{
+                 String log= "Comando: comodin, parametros (jugador: "+m.getJugador()+", guerrero: "+m.getGuerreros().get(0)+", arma 1 : "+m.getArmas().get(0)+", daño:"+m.getDaño()+", arma 2: "+m.getArmas().get(1)+" daño: "+m.getDaño1();
+                 logs.add(log);
+            }
+            
+            this.publish(message);
+        }
+        if(message instanceof GanarMessage){
             this.publish(message);
         }
 

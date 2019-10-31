@@ -16,14 +16,18 @@ import java.util.ArrayList;
  */
 public class Comodin  implements ICommand {
     private WarriorsSubscriber jugador;
+    private ArrayList<String> guerreros;
+    private ArrayList<String> armas;
     private ArrayList<Double> daño1;
     private ArrayList<Double> daño2;
     private String topic;
-    public Comodin(WarriorsSubscriber juego,String topic,ArrayList<Double> daño1, ArrayList<Double> daño2) {
+    public Comodin(WarriorsSubscriber juego,String topic,ArrayList<Double> daño1, ArrayList<Double> daño2,ArrayList<String> guerreros,ArrayList<String> armas) {
         this.topic=topic;
         this.jugador = juego;
         this.daño1=daño1;
         this.daño2=daño2;
+        this.guerreros=guerreros;
+        this.armas=armas;
     }
 
     public ArrayList<Double> getDaño1() {
@@ -47,6 +51,8 @@ public class Comodin  implements ICommand {
         ComodinMessage mensaje = new ComodinMessage(this.topic,jugador.getId());
         mensaje.setDaño(daño1);
         mensaje.setDaño1(daño2);
+        mensaje.setArmas(armas);
+        mensaje.setGuerreros(guerreros);
         jugador.sendMessage(mensaje);
     };
     

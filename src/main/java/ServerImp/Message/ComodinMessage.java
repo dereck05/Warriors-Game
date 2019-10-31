@@ -16,6 +16,8 @@ public class ComodinMessage extends AMessage{
     private ArrayList<Double> daño;
     private ArrayList<Double> daño1;
     private String jugador;
+    private ArrayList<String> guerreros;
+    private ArrayList<String> armas;
     public ComodinMessage(String topic,String pJugador) {
         super(topic);
         this.jugador=pJugador;
@@ -44,5 +46,16 @@ public class ComodinMessage extends AMessage{
     public void setDaño1(ArrayList<Double> daño1) {
         this.daño1 = daño1;
     }
-    
+    public ArrayList<String> getGuerreros(){
+        return this.guerreros;
+    }
+    public void setGuerreros(ArrayList<String> guerreros){
+        this.guerreros=guerreros;
+    }
+    public ArrayList<String> getArmas(){
+        return this.armas;
+    }
+    public void setArmas(ArrayList<String> armas){
+        this.armas=armas;
+    }
 }
