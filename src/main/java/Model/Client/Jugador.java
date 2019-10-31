@@ -7,6 +7,7 @@ package Model.Client;
 
 import Model.Ataque;
 import Model.Command.AtaqueCommand;
+import Model.Command.Comodin;
 import Model.Command.ICommand;
 import Model.Command.Invoker;
 import Model.Guerrero;
@@ -18,7 +19,12 @@ import ServerImp.Message.FeedMessage;
 import ServerImp.Publisher.WarriorsPublisher;
 import ServerImp.Subscriber.WarriorsSubscriber;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,12 +131,16 @@ public class Jugador {
         System.out.println("enviar mensaje");
         System.out.println("recargar");  
         System.out.println("ver mis personajes");
+        System.out.println("comodin");
         System.out.println("======================================");
    
    }
    private void run() throws InterruptedException{
        Invoker invoker = new Invoker();
        ICommand comando;
+       boolean comodin = false;
+       LocalDateTime locaDate = LocalDateTime.now();
+       
         while(true){
             printMenu();
             String option = scan.nextLine();
@@ -255,36 +265,21 @@ public class Jugador {
                     break;
                 case "atacar":
                     System.out.println("Escoja el numero del guerrero que desea enviar a atacar: ");
-                    for(int i=0; i<guerreros.size();i++){
-                        System.out.println(i+" "+guerreros.get(i).getNombre());
+                    Guerrero guerrero = escogerGuerreros();
+                    if(guerrero.equals(null)){
+                        System.out.println("Ataque erroneo");
                     }
-                    String temElegido = scan.nextLine();
-                    try{
-                        Integer elegido = Integer.parseInt(temElegido);
-                        Guerrero guerrero = guerreros.get(elegido);
-                        System.out.println("Escoja el número de arma que desea usar");
-                        System.out.println(guerrero.getAtaques().size());
-                        for(int j=0; j<guerrero.getAtaques().size();j++){
-                            if(guerrero.getAtaques().get(j).getEstado().equals("activa")){
-                            System.out.println(j+" "+guerrero.getAtaques().get(j).getNombre());}
-                        }
-                        String temAElegida = scan.nextLine();
-                        try{
-                            Integer elegida = Integer.parseInt(temAElegida);
-                            ArrayList<Double> daño = guerrero.getDamage().get(elegida);
-                            guerrero.getAtaques().get(elegida).setEstado("inactiva");
+                    else{
+                        ArrayList<Double> daño= escogerArma(guerrero);
+                        if(daño.isEmpty()){
+                            System.out.println("Ataque erroneo");
+                        }else{
                             comando = new AtaqueCommand(subscriber,daño,topic);
                             invoker.execute(comando);
-                            System.out.println("El ataque ha sido exitoso");
-                        }
-                        catch(Exception e){
-                            e.printStackTrace();
-                            System.out.println("Error al realizar el ataque");
-                        }
+                            System.out.println("El ataque ha sido exitoso");    }   
+                        
                     }
-                    catch(Exception e){
-                        System.out.println("Error al realizar el ataque");
-                    }
+                 
                     break;
                 case "seleccionar jugador":
                     break;
@@ -300,30 +295,102 @@ public class Jugador {
                     break;
                 case "ver mis personajes":
                    
-                    for(Guerrero guerrero: guerreros){
+                    for(Guerrero gue: guerreros){
                          System.out.println("\t------------------------------------------");
                         String estado;
-                        if(guerrero.getActivo()){
+                        if(gue.getActivo()){
                             estado = "vivo";
                         }
                         else{
                             estado = "muerto";
                         }
-                        System.out.println("Nombre: "+guerrero.getNombre()+", tipo: "+guerrero.getTipo()+", vida: "+guerrero.getVida()+", estado: "+estado);
+                        System.out.println("Nombre: "+gue.getNombre()+", tipo: "+gue.getTipo()+", vida: "+gue.getVida()+", estado: "+estado);
                         System.out.println("\t------------------ARMAS-------------------");
-                        for(Ataque ataque: guerrero.getAtaques()){
+                        for(Ataque ataque: gue.getAtaques()){
                             System.out.println("Nombre: "+ataque.getNombre()+", estado: "+ataque.getEstado());
                         }
                         System.out.println();
                     }
                     break;
-                    
+                case "comodin":
+                    LocalDateTime locaDate1 = LocalDateTime.now();
+                    int minutes = (int) ChronoUnit.MINUTES.between(locaDate, locaDate1);
+                    if(minutes>=1){
+                        System.out.println("Escoja una opción:");
+                        System.out.println("1. Usar dos personajes.");
+                        System.out.println("2. Usar dos armas.");
+                        String tempOpcion = scan.nextLine();
+                        ArrayList<Double> daño1= new ArrayList<Double>();
+                        ArrayList<Double> daño2= new ArrayList<Double>();
+                        switch(tempOpcion){
+                            case "1":
+                                System.out.println("\t------------------PRIMER GUERRERO------------------");
+                                Guerrero gue1 = escogerGuerreros();
+                                daño1 =escogerArma(gue1);
+                                System.out.println("\t------------------SEGUNDO GUERRERO------------------");
+                                Guerrero gue2 = escogerGuerreros();
+                                daño2 = escogerArma(gue2);
+                                break;
+                            case "2":
+                                System.out.println("\t------------------------ESCOGER GUERRERO-----------------------");
+                                Guerrero guee = escogerGuerreros();
+                                System.out.println("\t------------------------ESCOGER ARMAS-----------------------");
+                                daño1 = escogerArma(guee);
+                                daño2 = escogerArma(guee);
+                                break;
+                        }
+                        comando = new Comodin(this.subscriber,this.topic,daño1,daño2);
+                        invoker.execute(comando);
+                        System.out.println("Comodin utilizado con exito");
+                    }
+                    else{
+                        System.out.println("Comodin no disponible");
+                    }
+                    break;
                 default:
                     System.out.println("opción invalida");
             }
         }}
+    public Guerrero escogerGuerreros(){
+            Guerrero guerrero = null;
+            for(int i=0; i<guerreros.size();i++){
+                if(guerreros.get(i).getActivo()){
+                System.out.println(i+" "+guerreros.get(i).getNombre());}
+            }
+            String temElegido = scan.nextLine();
+            try{
+                Integer elegido = Integer.parseInt(temElegido);
+                guerrero = guerreros.get(elegido);
+                return guerrero;
+            }
+            catch(Exception e){
+                System.out.println("Error al realizar el ataque");
+            }
+            return guerrero;
 
-       
+    }
+    
+     public ArrayList<Double> escogerArma(Guerrero guerrero){
+            ArrayList<Double> daño = new ArrayList<Double>();
+            System.out.println("Escoja el número de arma que desea usar");
+            System.out.println(guerrero.getAtaques().size());
+            for(int j=0; j<guerrero.getAtaques().size();j++){
+                if(guerrero.getAtaques().get(j).getEstado().equals("activa")){
+                System.out.println(j+" "+guerrero.getAtaques().get(j).getNombre());}
+            }
+            String temAElegida = scan.nextLine();
+            try{
+                Integer elegida = Integer.parseInt(temAElegida);
+                daño = guerrero.getDamage().get(elegida);
+                guerrero.getAtaques().get(elegida).setEstado("inactiva");
+                return daño;
+            }
+            catch(Exception e){
+                e.printStackTrace();
+                System.out.println("Error al realizar el ataque");
+            }
+            return daño;
+     }  
     }
     
     

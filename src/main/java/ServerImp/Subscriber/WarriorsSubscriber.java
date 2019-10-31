@@ -21,6 +21,7 @@ import Model.Client.SubscriberClient;
 import Model.Client.Jugador;
 import Model.Guerrero;
 import ServerImp.Message.AtaqueMessage;
+import ServerImp.Message.ComodinMessage;
 
 
 public class WarriorsSubscriber extends ASubscriber{
@@ -103,72 +104,17 @@ public class WarriorsSubscriber extends ASubscriber{
            // Fuego-Aire-Agua-Magia blanca-Magia negra-Electricidad-Hielo-Acid-Espiritualidad-Hierro
             AtaqueMessage m = (AtaqueMessage) message;
             if(m.getJugador().equals(this.getId())==false){
-                
-                for(int i=0; i<client.getGuerreros().size();i++){
-                    Double rebaja;                   
-                    Double vidaActual = client.getGuerreros().get(i).getVida();
-                    switch(client.getGuerreros().get(i).getTipo()){
+                rebajarVida(m.getDaño());
 
-                        case "fuego":   
-                            rebaja = m.getDaño().get(0);
-                            client.getGuerreros().get(i).setVida(vidaActual-rebaja);
-                            break;
-                        case "aire":
-                            rebaja = m.getDaño().get(1);
-                            client.getGuerreros().get(i).setVida(vidaActual-rebaja);
-                            break;
-                        case "agua":
-                            rebaja = m.getDaño().get(2);
-                            client.getGuerreros().get(i).setVida(vidaActual-rebaja);
-                            break;
-                        case "magia blanca":
-                            rebaja = m.getDaño().get(3);
-                            client.getGuerreros().get(i).setVida(vidaActual-rebaja);
-                            break;
-                        case "magia negra":
-                            rebaja = m.getDaño().get(4);
-                            client.getGuerreros().get(i).setVida(vidaActual-rebaja);
-                            break;
-                        case "electricidad":
-                            rebaja = m.getDaño().get(5);
-                            client.getGuerreros().get(i).setVida(vidaActual-rebaja);
-                            break;
-                        case "hielo":
-                            rebaja = m.getDaño().get(6);
-                            client.getGuerreros().get(i).setVida(vidaActual-rebaja);
-                            break;
-                        case "acid":
-                            rebaja = m.getDaño().get(7);
-                            client.getGuerreros().get(i).setVida(vidaActual-rebaja);
-                            break;
-                        case "espiritualidad":
-                            rebaja = m.getDaño().get(8);
-                            client.getGuerreros().get(i).setVida(vidaActual-rebaja);
-                            break;
-                        case "hierro":
-                            rebaja = m.getDaño().get(9);
-                            client.getGuerreros().get(i).setVida(vidaActual-rebaja);
-                            break;
-                            
-                    }
-                }
             }
-            /*
-            boolean flag = false;
-            for(int i = 0; i < this.feed.size(); i++){
-                if(this.feed.get(i).getPost().getId().equals(m.getId())){
-                    this.feed.get(i).setPost(m);
-                    flag = true;
-                    break;
-                }  
+        }if(message instanceof ComodinMessage){
+            ComodinMessage m = (ComodinMessage) message;
+            if (m.getJugador().equals(this.getId())==false){
+                rebajarVida(m.getDaño());
+                rebajarVida(m.getDaño1());
             }
-            if(!flag){
-                this.feed.add(new FeedMessage(m));
-                System.out.println("Nuevo post de " + m.getTopic() + ": " + m.getContent());
-                return;
-            }   
-            System.out.println("Post actualizado de " + m.getTopic());*/
         }
+        
     }
 
     @Override
@@ -194,6 +140,59 @@ public class WarriorsSubscriber extends ASubscriber{
             
         } catch (IOException ex) {
             Logger.getLogger(WarriorsSubscriber.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    public void rebajarVida(ArrayList<Double> daño){
+        for(int i=0; i<client.getGuerreros().size();i++){
+        Double rebaja;                   
+        Double vidaActual = client.getGuerreros().get(i).getVida();
+        switch(client.getGuerreros().get(i).getTipo()){
+
+            case "fuego":   
+                rebaja = daño.get(0);
+                client.getGuerreros().get(i).setVida(vidaActual-rebaja);
+                break;
+            case "aire":
+                rebaja = daño.get(1);
+                client.getGuerreros().get(i).setVida(vidaActual-rebaja);
+                break;
+            case "agua":
+                rebaja = daño.get(2);
+                client.getGuerreros().get(i).setVida(vidaActual-rebaja);
+                break;
+            case "magia blanca":
+                rebaja = daño.get(3);
+                client.getGuerreros().get(i).setVida(vidaActual-rebaja);
+                break;
+            case "magia negra":
+                rebaja = daño.get(4);
+                client.getGuerreros().get(i).setVida(vidaActual-rebaja);
+                break;
+            case "electricidad":
+                rebaja = daño.get(5);
+                client.getGuerreros().get(i).setVida(vidaActual-rebaja);
+                break;
+            case "hielo":
+                rebaja = daño.get(6);
+                client.getGuerreros().get(i).setVida(vidaActual-rebaja);
+                break;
+            case "acid":
+                rebaja = daño.get(7);
+                client.getGuerreros().get(i).setVida(vidaActual-rebaja);
+                break;
+            case "espiritualidad":
+                rebaja = daño.get(8);
+                client.getGuerreros().get(i).setVida(vidaActual-rebaja);
+                break;
+            case "hierro":
+                rebaja = daño.get(9);
+                client.getGuerreros().get(i).setVida(vidaActual-rebaja);
+                break;
+
+        }
+        if(client.getGuerreros().get(i).getVida()<=0){
+            client.getGuerreros().get(i).setActivo(false);
+        }
         }
     }
     
