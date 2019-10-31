@@ -26,7 +26,7 @@ public class AtaqueCommand implements ICommand {
     }
     @Override
     public void execute(){
-        AtaqueMessage mensaje = new AtaqueMessage(this.topic);
+        AtaqueMessage mensaje = new AtaqueMessage(this.topic,jugador.getId());
         mensaje.setDaño(daño);
         jugador.sendMessage(mensaje);
     };

@@ -10,6 +10,7 @@ import ContentServer.AContentServer;
 import ContentServer.PublisherHandler;
 import ContentServer.SubscriberHandler;
 import Message.AMessage;
+import ServerImp.Message.AtaqueMessage;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,8 +29,8 @@ public class WarriorsContentServer extends AContentServer{
 
     @Override
     public void processSubMessage(AMessage message, SubscriberHandler handler) {
-        if(message instanceof FeedMessage){
-            FeedMessage m = (FeedMessage) message;
+        if(message instanceof AtaqueMessage){
+            AtaqueMessage m = (AtaqueMessage) message;
             
             PublisherHandler publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(m.getTopic())).findAny().orElse(null);
             try {
@@ -80,7 +81,7 @@ public class WarriorsContentServer extends AContentServer{
 
     @Override
     public void processPubMessage(AMessage message, PublisherHandler handler) {
-        if(message instanceof PostMessage){
+        if(message instanceof AtaqueMessage){
             try {
                 this.broadcastMessageSub(message, handler.getTopic());
             } catch (IOException ex) {

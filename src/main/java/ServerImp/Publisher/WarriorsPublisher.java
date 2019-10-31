@@ -19,6 +19,7 @@ import ServerImp.ContentServer.WarriorsContentServer;
 import ServerImp.Message.FeedMessage;
 import ServerImp.Message.WarriorsRequestMessage;
 import Model.Client.PublisherClient;
+import ServerImp.Message.AtaqueMessage;
 
 
 public class WarriorsPublisher extends APublisher{
@@ -82,6 +83,10 @@ public class WarriorsPublisher extends APublisher{
             WarriorsConMessage m = (WarriorsConMessage) message;
             this.setConnected(m.isAcceptedConnection());
             System.out.println(m.getConnMessage());
+        }
+        if(message instanceof AtaqueMessage){
+            AtaqueMessage m = (AtaqueMessage) message;
+            this.publish(message);
         }
         //Aquí va toda la lógica
         /*

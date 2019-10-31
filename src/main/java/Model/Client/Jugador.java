@@ -123,7 +123,8 @@ public class Jugador {
         System.out.println("pasar");
         System.out.println("salida mutua");
         System.out.println("enviar mensaje");
-        System.out.println("recargar");    
+        System.out.println("recargar");  
+        System.out.println("ver mis personajes");
         System.out.println("======================================");
    
    }
@@ -139,7 +140,7 @@ public class Jugador {
                     SuperFactory sf = new SuperFactory();
                     
                     System.out.println("Debe crear 4 guerreros");
-                    for (int i=1; i<=4;i++){
+                    for (int i=1; i<=2;i++){
                         System.out.println("-----------------------------------");
                         System.out.println("Ingrese el nombre del guerrero: ");
                         String tempNombre = scan.nextLine();
@@ -148,12 +149,12 @@ public class Jugador {
                         System.out.println("Ingrese el path con la  imagen del guerrero: ");
                         String tempPath = scan.nextLine();
                         ArrayList<Ataque> tempAtaque = new ArrayList<Ataque>();
-                        for(int j=1; j<=5;j++){
+                        for(int j=1; j<=2;j++){
                             System.out.println("Ingrese el nombre del arma: ");
                             String tempNombreArma = scan.nextLine();
                             System.out.println("Ingrese el path con la imagen del arma: ");
                             String tempImagenArma = scan.nextLine();
-                            Ataque a=sf.crearAtaque(false, tempNombre, 0.0, 0.0, 0.0, 0.0,tempImagenArma , "activa");
+                            Ataque a=sf.crearAtaque(false, tempNombreArma, 0.0, 0.0, 0.0, 0.0,tempImagenArma , "activa");
                             tempAtaque.add(a);
                         }
                         Personaje p = sf.createPersonaje(true, tempNombre, tempPath, 100.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tempAtaque, tempTipo);
@@ -255,30 +256,34 @@ public class Jugador {
                 case "atacar":
                     System.out.println("Escoja el numero del guerrero que desea enviar a atacar: ");
                     for(int i=0; i<guerreros.size();i++){
-                        System.out.println(i+1+" "+guerreros.get(i));
+                        System.out.println(i+" "+guerreros.get(i).getNombre());
                     }
                     String temElegido = scan.nextLine();
                     try{
                         Integer elegido = Integer.parseInt(temElegido);
-                        Guerrero guerrero = guerreros.get(elegido-1);
-                        System.out.println("Escoje el número de arma que desea usar");
-                        for(int i=0; i<guerrero.getAtaques().size();i++){
-                            System.out.println(i+1+" "+guerrero.getAtaques().get(i));
+                        Guerrero guerrero = guerreros.get(elegido);
+                        System.out.println("Escoja el número de arma que desea usar");
+                        System.out.println(guerrero.getAtaques().size());
+                        for(int j=0; j<guerrero.getAtaques().size();j++){
+                            if(guerrero.getAtaques().get(j).getEstado().equals("activa")){
+                            System.out.println(j+" "+guerrero.getAtaques().get(j).getNombre());}
                         }
                         String temAElegida = scan.nextLine();
                         try{
                             Integer elegida = Integer.parseInt(temAElegida);
-                            ArrayList<Double> daño = guerrero.getDamage().get(elegida-1);
-
-                            comando = new AtaqueCommand(subscriber,daño,this.topic);
+                            ArrayList<Double> daño = guerrero.getDamage().get(elegida);
+                            guerrero.getAtaques().get(elegida).setEstado("inactiva");
+                            comando = new AtaqueCommand(subscriber,daño,topic);
                             invoker.execute(comando);
+                            System.out.println("El ataque ha sido exitoso");
                         }
                         catch(Exception e){
-                            System.out.println("Debe escoger entre las opciones anteriores");
+                            e.printStackTrace();
+                            System.out.println("Error al realizar el ataque");
                         }
                     }
                     catch(Exception e){
-                        System.out.println("Debe escoger entre las opciones anteriores");
+                        System.out.println("Error al realizar el ataque");
                     }
                     break;
                 case "seleccionar jugador":
@@ -292,6 +297,25 @@ public class Jugador {
                 case "enviar mensaje":
                     break;
                 case "recargar":
+                    break;
+                case "ver mis personajes":
+                   
+                    for(Guerrero guerrero: guerreros){
+                         System.out.println("\t------------------------------------------");
+                        String estado;
+                        if(guerrero.getActivo()){
+                            estado = "vivo";
+                        }
+                        else{
+                            estado = "muerto";
+                        }
+                        System.out.println("Nombre: "+guerrero.getNombre()+", tipo: "+guerrero.getTipo()+", vida: "+guerrero.getVida()+", estado: "+estado);
+                        System.out.println("\t------------------ARMAS-------------------");
+                        for(Ataque ataque: guerrero.getAtaques()){
+                            System.out.println("Nombre: "+ataque.getNombre()+", estado: "+ataque.getEstado());
+                        }
+                        System.out.println();
+                    }
                     break;
                     
                 default:
