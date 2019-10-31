@@ -5,6 +5,7 @@
  */
 package Model.Client;
 
+import Model.Ataque;
 import ServerImp.ContentServer.WarriorsContentServer;
 
 /**
@@ -18,6 +19,7 @@ public class WarriorsGame {
      */
     public static void main(String[] args) {
         try{
+           
             WarriorsContentServer wcs = new WarriorsContentServer();
         }
         catch(Exception e){

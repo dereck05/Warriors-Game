@@ -11,6 +11,7 @@ import ContentServer.PublisherHandler;
 import ContentServer.SubscriberHandler;
 import Message.AMessage;
 import ServerImp.Message.AtaqueMessage;
+import ServerImp.Message.ChatMessage;
 import ServerImp.Message.ComodinMessage;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -30,8 +31,30 @@ public class WarriorsContentServer extends AContentServer{
 
     @Override
     public void processSubMessage(AMessage message, SubscriberHandler handler) {
-        if(message instanceof AtaqueMessage || message instanceof ComodinMessage){
+        if(message instanceof AtaqueMessage){
+            System.out.println("Si entra");
             AtaqueMessage m = (AtaqueMessage) message;
+            
+            PublisherHandler publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(m.getTopic())).findAny().orElse(null);
+            try {
+                publisher.sendMessage(m);
+            } catch (IOException ex) {
+                Logger.getLogger(WarriorsContentServer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        if(message instanceof ChatMessage){
+            ChatMessage m = (ChatMessage) message;
+            
+            PublisherHandler publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(m.getTopic())).findAny().orElse(null);
+            try {
+                publisher.sendMessage(m);
+            } catch (IOException ex) {
+                Logger.getLogger(WarriorsContentServer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        if (message instanceof ComodinMessage){
+            System.out.println("Si entra comodin");
+            ComodinMessage m = (ComodinMessage) message;
             
             PublisherHandler publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(m.getTopic())).findAny().orElse(null);
             try {
@@ -82,8 +105,9 @@ public class WarriorsContentServer extends AContentServer{
 
     @Override
     public void processPubMessage(AMessage message, PublisherHandler handler) {
-        if(message instanceof AtaqueMessage || message instanceof ComodinMessage){
+        if(message instanceof AtaqueMessage || message instanceof ComodinMessage || message instanceof ChatMessage){
             try {
+                 System.out.println("???");
                 this.broadcastMessageSub(message, handler.getTopic());
             } catch (IOException ex) {
                 Logger.getLogger(WarriorsContentServer.class.getName()).log(Level.SEVERE, null, ex);

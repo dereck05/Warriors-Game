@@ -20,6 +20,7 @@ import ServerImp.Message.FeedMessage;
 import ServerImp.Message.WarriorsRequestMessage;
 import Model.Client.PublisherClient;
 import ServerImp.Message.AtaqueMessage;
+import ServerImp.Message.ChatMessage;
 import ServerImp.Message.ComodinMessage;
 
 
@@ -85,8 +86,16 @@ public class WarriorsPublisher extends APublisher{
             this.setConnected(m.isAcceptedConnection());
             System.out.println(m.getConnMessage());
         }
-        if(message instanceof AtaqueMessage || message instanceof ComodinMessage){
+        if(message instanceof AtaqueMessage){
             AtaqueMessage m = (AtaqueMessage) message;
+            this.publish(message);
+        }
+        if (message instanceof ChatMessage){
+             ChatMessage m = (ChatMessage) message;
+            this.publish(message);
+        }
+        if(message instanceof ComodinMessage){
+            ComodinMessage m = (ComodinMessage) message;
             this.publish(message);
         }
         //Aquí va toda la lógica

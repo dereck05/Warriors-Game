@@ -21,6 +21,7 @@ import Model.Client.SubscriberClient;
 import Model.Client.Jugador;
 import Model.Guerrero;
 import ServerImp.Message.AtaqueMessage;
+import ServerImp.Message.ChatMessage;
 import ServerImp.Message.ComodinMessage;
 
 
@@ -97,6 +98,13 @@ public class WarriorsSubscriber extends ASubscriber{
                     break;
                 
                     
+            }
+        }
+        if (message instanceof ChatMessage){
+            ChatMessage m = (ChatMessage) message;
+            if(m.getJugador().equals(this.getId())==false){
+                System.out.println(m.getAsunto());
+                this.client.mensajes.put(m.getJugador(), m.getContent());
             }
         }
         
@@ -191,7 +199,9 @@ public class WarriorsSubscriber extends ASubscriber{
 
         }
         if(client.getGuerreros().get(i).getVida()<=0){
+            client.getGuerreros().get(i).setVida(0.0);
             client.getGuerreros().get(i).setActivo(false);
+            System.out.println(client.getGuerreros().get(i).getNombre()+" ha muerto");
         }
         }
     }

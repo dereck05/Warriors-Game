@@ -12,24 +12,16 @@ import Message.AMessage;
  * @author maryp
  */
 public class ChatMessage extends AMessage{
-    private String id;
     private String asunto;
     private String content;
     private String jugador;
     public ChatMessage(String topic, String content,String jugador) {
         super(topic);
         this.content=content;
-        this.id = java.time.LocalDateTime.now().toString();
         this.jugador=jugador;
         
     }
-    public String getId() {
-        return id;
-    }
 
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getContent() {
         return content;

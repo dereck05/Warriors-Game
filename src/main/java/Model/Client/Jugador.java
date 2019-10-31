@@ -7,6 +7,7 @@ package Model.Client;
 
 import Model.Ataque;
 import Model.Command.AtaqueCommand;
+import Model.Command.Chat;
 import Model.Command.Comodin;
 import Model.Command.ICommand;
 import Model.Command.Invoker;
@@ -39,6 +40,7 @@ public class Jugador {
     private WarriorsSubscriber subscriber;
     private String id;
     private ArrayList<Guerrero> guerreros;
+    public HashMap<String,String> mensajes;
     private Score score;
     private String status;
     private  Scanner scan;
@@ -57,6 +59,7 @@ public class Jugador {
     }
     public Jugador(){
         this.score= new Score();
+        this.mensajes=new HashMap<>();
         this.guerreros = new ArrayList<Guerrero>();
         this.status="activo";
     }
@@ -128,7 +131,7 @@ public class Jugador {
         System.out.println("rendirse");
         System.out.println("pasar");
         System.out.println("salida mutua");
-        System.out.println("enviar mensaje");
+        System.out.println("mensajes");
         System.out.println("recargar");  
         System.out.println("ver mis personajes");
         System.out.println("comodin");
@@ -247,7 +250,27 @@ public class Jugador {
                     break;
                 case "salida mutua":
                     break;
-                case "enviar mensaje":
+                case "mensajes":
+                    System.out.println("\t-------------MENSAJES-------------");
+                    for(HashMap.Entry<String, String> entry : mensajes.entrySet()){
+                        System.out.println("Jugador: "+entry.getKey()+", mensaje: "+entry.getValue());
+                    }
+                    System.out.println("Desea enviar un nuevo mensaje? y/n");
+                    String res = scan.nextLine();
+                    switch(res){
+                        case "y":
+                            System.out.println("Escriba el mensaje que desea enviar: ");
+                            String mensaje = scan.nextLine();
+                            comando = new Chat(subscriber,topic,"Tienes un nuevo mensaje",mensaje);
+                            invoker.execute(comando);
+                            System.out.println("Mensaje enviado con éxito");
+                            break;
+                        case "n":
+                            break;
+                        default:
+                            System.out.println("Comando invalido");
+                            break;
+                    }
                     
                     
                     break;
