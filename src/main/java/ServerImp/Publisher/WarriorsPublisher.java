@@ -25,6 +25,7 @@ import ServerImp.Message.ComodinMessage;
 import ServerImp.Message.GanarMessage;
 import ServerImp.Message.LogMessage;
 import ServerImp.Message.PasarMessage;
+import ServerImp.Message.ScoreMessage;
 import java.time.LocalDate;
 
 
@@ -128,7 +129,7 @@ public class WarriorsPublisher extends APublisher{
             
             this.publish(message);
         }
-        if(message instanceof GanarMessage){
+        if(message instanceof GanarMessage || message instanceof ScoreMessage){
             this.publish(message);
         }
 

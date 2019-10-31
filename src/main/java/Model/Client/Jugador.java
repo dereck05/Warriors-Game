@@ -19,6 +19,7 @@ import Model.SuperFactory;
 import ServerImp.Message.AtaqueMessage;
 import ServerImp.Message.FeedMessage;
 import ServerImp.Message.LogMessage;
+import ServerImp.Message.ScoreMessage;
 import ServerImp.Publisher.WarriorsPublisher;
 import ServerImp.Subscriber.WarriorsSubscriber;
 import java.io.IOException;
@@ -50,7 +51,7 @@ public class Jugador {
     public boolean actual;
     public  Map<String,Integer> topics;
     public ArrayList<String>logs;
-    
+    private Score scoreOtroJugador;
     
     public static void main(String[] args) throws InterruptedException {
         try {
@@ -79,6 +80,14 @@ public class Jugador {
         this.guerreros = new ArrayList<Guerrero>();
         this.score = new Score();
         this.status = "activo";
+    }
+
+    public Score getScoreOtroJugador() {
+        return scoreOtroJugador;
+    }
+
+    public void setScoreOtroJugador(Score scoreOtroJugador) {
+        this.scoreOtroJugador = scoreOtroJugador;
     }
     
     public void setID(String i){
@@ -396,6 +405,16 @@ public class Jugador {
                     System.out.println("Muertes: "+this.score.getMuertes());
                     break;
                 case "jugador estatus":
+                    ScoreMessage m1 =new ScoreMessage(topic,this.subscriber.getId());
+                    
+                    this.subscriber.sendMessage(m1);
+                    Thread.sleep(3000);
+                    System.out.println("Ganadas: "+this.scoreOtroJugador.getGanes());
+                    System.out.println("Perdidas: "+this.scoreOtroJugador.getPerdidas());
+                    System.out.println("Ataques exitosos: "+this.scoreOtroJugador.getAtaquesExitosos());
+                    System.out.println("Ataques fracasados: "+this.scoreOtroJugador.getAtaquesFracasados());
+                    System.out.println("Rendiciones: "+this.scoreOtroJugador.getRendiciones());
+                    System.out.println("Muertes: "+this.scoreOtroJugador.getMuertes());
                     break;
                 default:
                     System.out.println("opción invalida");

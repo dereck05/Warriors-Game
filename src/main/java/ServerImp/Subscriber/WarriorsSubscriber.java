@@ -26,6 +26,7 @@ import ServerImp.Message.ComodinMessage;
 import ServerImp.Message.GanarMessage;
 import ServerImp.Message.LogMessage;
 import ServerImp.Message.PasarMessage;
+import ServerImp.Message.ScoreMessage;
 
 
 public class WarriorsSubscriber extends ASubscriber{
@@ -147,6 +148,19 @@ public class WarriorsSubscriber extends ASubscriber{
             if(m.getJugador().equals(this.getId())==false){
                 System.out.println("El otro jugador a pasador de turno");
                 client.actual=true;
+            }
+        }
+        if(message instanceof ScoreMessage){
+            ScoreMessage m = (ScoreMessage) message;
+            if(m.getSocre()==null){
+                if(m.getJugador().equals(this.getId())==false){
+                    m.setSocre(client.getScore());
+                    this.sendMessage(m);}
+            }
+            else{
+                if(m.getJugador().equals(this.getId())){
+                    client.setScoreOtroJugador(m.getSocre());
+                }
             }
         }
         

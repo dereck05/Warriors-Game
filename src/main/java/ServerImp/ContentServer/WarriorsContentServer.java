@@ -21,6 +21,7 @@ import ServerImp.Message.GanarMessage;
 import ServerImp.Message.LogMessage;
 import ServerImp.Message.PasarMessage;
 import ServerImp.Message.PostMessage;
+import ServerImp.Message.ScoreMessage;
 import ServerImp.Message.WarriorsRequestMessage;
 import ServerImp.Message.WarriorsTopicsMessage;
 
@@ -34,6 +35,15 @@ public class WarriorsContentServer extends AContentServer{
 
     @Override
     public void processSubMessage(AMessage message, SubscriberHandler handler) {
+        if(message instanceof ScoreMessage){
+            ScoreMessage m = (ScoreMessage) message;
+            PublisherHandler publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(m.getTopic())).findAny().orElse(null);
+            try {
+                publisher.sendMessage(m);
+            } catch (IOException ex) {
+                Logger.getLogger(WarriorsContentServer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         if(message instanceof AtaqueMessage){
             System.out.println("Si entra");
             AtaqueMessage m = (AtaqueMessage) message;
@@ -135,7 +145,7 @@ public class WarriorsContentServer extends AContentServer{
 
     @Override
     public void processPubMessage(AMessage message, PublisherHandler handler) {
-        if(message instanceof AtaqueMessage || message instanceof ComodinMessage || message instanceof ChatMessage || message instanceof GanarMessage || message instanceof PasarMessage || message instanceof LogMessage){
+        if(message instanceof AtaqueMessage || message instanceof ComodinMessage || message instanceof ChatMessage || message instanceof GanarMessage || message instanceof PasarMessage || message instanceof LogMessage || message instanceof ScoreMessage){
             try {
                 // System.out.println("???");
                 this.broadcastMessageSub(message, handler.getTopic());
