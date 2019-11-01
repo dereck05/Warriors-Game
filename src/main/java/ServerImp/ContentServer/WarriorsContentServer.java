@@ -10,6 +10,7 @@ import ContentServer.AContentServer;
 import ContentServer.PublisherHandler;
 import ContentServer.SubscriberHandler;
 import Message.AMessage;
+import ServerImp.Message.ExitMessage;
 import Model.Score;
 import ServerImp.Message.AtaqueMessage;
 import ServerImp.Message.ChatMessage;
@@ -67,7 +68,7 @@ public class WarriorsContentServer extends AContentServer{
         if(message instanceof AtaqueMessage){
             System.out.println("Si entra");
             AtaqueMessage m = (AtaqueMessage) message;
-            
+
             PublisherHandler publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(m.getTopic())).findAny().orElse(null);
             try {
                 publisher.sendMessage(m);
@@ -104,7 +105,7 @@ public class WarriorsContentServer extends AContentServer{
         }
         if(message instanceof ChatMessage){
             ChatMessage m = (ChatMessage) message;
-            
+
             PublisherHandler publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(m.getTopic())).findAny().orElse(null);
             try {
                 publisher.sendMessage(m);
@@ -115,7 +116,7 @@ public class WarriorsContentServer extends AContentServer{
         if (message instanceof ComodinMessage){
            // System.out.println("Si entra comodin");
             ComodinMessage m = (ComodinMessage) message;
-            
+
             PublisherHandler publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(m.getTopic())).findAny().orElse(null);
             try {
                 publisher.sendMessage(m);
@@ -128,7 +129,7 @@ public class WarriorsContentServer extends AContentServer{
                 WarriorsRequestMessage m = (WarriorsRequestMessage) message;
                 switch(m.getRequestId()){
                     //Jugadores en el juego
-                    case 0: 
+                    case 0:
                         broadcastTopics(handler);
                         break;
                     //Unirse al juego
@@ -138,27 +139,38 @@ public class WarriorsContentServer extends AContentServer{
                         String topic = m.getRequestString();
                         this.registerSubscription(topic, handler);
                         PublisherHandler publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(topic)).findAny().orElse(null);
-                        
+
                         WarriorsRequestMessage m2 = new WarriorsRequestMessage();
                         m2.setRequestId(1);
                         m2.setRequestString("Nuevo subscriptor");
                         publisher.sendMessage(m2);
-                        
+
                         m2.setRequestId(0);
                         m2.setRequestString("Subscrito");
                         handler.sendMessage(m2);
                         break;
                     //Salir del juego
-                    case 2: 
-                        
+                    case 2:
+
                         topic = m.getRequestString();
                         this.removeSubscription(topic, handler);
-                        publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(topic)).findAny().orElse(null);                       
+                        publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(topic)).findAny().orElse(null);
                         WarriorsRequestMessage m3 = new WarriorsRequestMessage();
                         m3.setRequestId(2);
                         m3.setRequestString("Subscriptor Perdido");
                         publisher.sendMessage(m3);
                 }
+            } catch (IOException ex) {
+                Logger.getLogger(WarriorsContentServer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        if(message instanceof ExitMessage){
+            try {
+
+                ExitMessage m = (ExitMessage) message;
+                m.setMensaje("El otro jugador se ha rendido.");
+                this.broadcastMessageSub(m, m.getTopic());
+
             } catch (IOException ex) {
                 Logger.getLogger(WarriorsContentServer.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -175,8 +187,8 @@ public class WarriorsContentServer extends AContentServer{
                 Logger.getLogger(WarriorsContentServer.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
-        
+
+
         if(message instanceof WarriorsRequestMessage){
             try {
                 WarriorsRequestMessage m = (WarriorsRequestMessage) message;
@@ -209,11 +221,11 @@ public class WarriorsContentServer extends AContentServer{
 
     @Override
     public void acceptPubConnection(PublisherHandler handler) {
-        
+
         WarriorsConMessage m = new WarriorsConMessage(true);
         m.setId(handler.getTopic());
         m.setConnMessage("Conection Successful as Publisher");
-        
+
         try {
             handler.sendMessage(m);
         } catch (IOException ex) {
@@ -228,7 +240,7 @@ public class WarriorsContentServer extends AContentServer{
         handler.setId(newId);
         m.setId(newId);
         m.setConnMessage("Conection Successful as Subscriber");
-        
+
         try {
             handler.sendMessage(m);
         } catch (IOException ex) {
@@ -241,7 +253,7 @@ public class WarriorsContentServer extends AContentServer{
         WarriorsConMessage m = new WarriorsConMessage(false);
         m.setId(handler.getTopic());
         m.setConnMessage("Conection Denied as Publisher");
-        
+
         try {
             handler.sendMessage(m);
         } catch (IOException ex) {
@@ -253,12 +265,12 @@ public class WarriorsContentServer extends AContentServer{
     public void denySubConnection(SubscriberHandler handler) {
         WarriorsConMessage m = new WarriorsConMessage(false);
         m.setConnMessage("Conection Denied as Publisher");
-        
+
         try {
             handler.sendMessage(m);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
-    
+
 }

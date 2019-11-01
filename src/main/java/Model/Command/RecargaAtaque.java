@@ -5,13 +5,34 @@
  */
 package Model.Command;
 
+import Model.Client.SubscriberClient;
+import Model.Guerrero;
+import ServerImp.Publisher.WarriorsPublisher;
+import ServerImp.Subscriber.WarriorsSubscriber;
+
 /**
  *
  * @author derec
  */
 public class RecargaAtaque implements ICommand {
     
+    
+    private String id;
+    private WarriorsSubscriber jugador;
+    
+    public RecargaAtaque(WarriorsSubscriber subs,String ide){
+        this.jugador=subs;
+        this.id = ide;
+     
+    }
+
     @Override
-    public void execute(){};
+    public void execute(){
+        for(int i = 0 ; i < jugador.getClient().getGuerreros().get(Integer.parseInt(this.id)-1).getAtaques().size();i++){
+            jugador.getClient().getGuerreros().get(Integer.parseInt(this.id)-1).getAtaques().get(i).setEstado("activa");
+        }
+        
+        
+    };
     
 }

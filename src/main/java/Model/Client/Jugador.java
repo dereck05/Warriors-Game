@@ -11,6 +11,10 @@ import Model.Command.Chat;
 import Model.Command.Comodin;
 import Model.Command.ICommand;
 import Model.Command.Invoker;
+import Model.Command.RecargaAtaque;
+import Model.Command.Rendirse;
+import Model.Command.SalidaMutua;
+import Model.Command.SeleccionarJugador;
 import Model.Command.PasoTurno;
 import Model.Guerrero;
 import Model.Personaje;
@@ -46,7 +50,7 @@ public class Jugador {
     private ArrayList<Guerrero> guerreros;
     public HashMap<String,String> mensajes;
     private Score score;
-    private String status;
+    private Boolean status;
     private  Scanner scan;
     private String topic;
     public boolean actual;
@@ -54,7 +58,7 @@ public class Jugador {
     public ArrayList<String>logs;
     private Score scoreOtroJugador;
     private static ArrayList<Score> ranking;
-    
+
     public static void main(String[] args) throws InterruptedException {
         try {
             Jugador client = new Jugador();
@@ -67,21 +71,22 @@ public class Jugador {
         this.score= new Score();
         this.mensajes=new HashMap<>();
         this.guerreros = new ArrayList<Guerrero>();
+        this.status=true;
         this.logs = new ArrayList<String>();
-        this.status="activo";
+
     }
     public Jugador(String i, WarriorsPublisher pPublisher){
         this.id=i;
         this.score=new Score();
         this.guerreros = new ArrayList<Guerrero>();
         this.publisher= pPublisher;
-        this.status = "activo";
+        this.status = true;
     }
     public Jugador(String i){
         this.id = i;
         this.guerreros = new ArrayList<Guerrero>();
         this.score = new Score();
-        this.status = "activo";
+        this.status = true;
     }
 
     public ArrayList<Score> getRanking() {
@@ -99,7 +104,7 @@ public class Jugador {
     public void setScoreOtroJugador(Score scoreOtroJugador) {
         this.scoreOtroJugador = scoreOtroJugador;
     }
-    
+
     public void setID(String i){
         this.id = i;
     }
@@ -109,7 +114,7 @@ public class Jugador {
     public void setScore(Score s){
         this.score = s;
     }
-    public void setStatus(String s){
+    public void setStatus(Boolean s){
         this.status = s;
     }
     public String getID(){
@@ -121,27 +126,27 @@ public class Jugador {
     public Score getScore(){
         return this.score;
     }
-    public String getStatus(){
+    public Boolean getStatus(){
         return this.status;
     }
-    private void start() throws IOException, InterruptedException{     
-        
+    private void start() throws IOException, InterruptedException{
+
         scan = new Scanner(System.in);
         subscriber= new WarriorsSubscriber(this);
         Thread.sleep(3000);
 
         if(!subscriber.isConnected()){
-            
+
             System.out.println("Couldnt connect...");
             System.exit(0);
         }
       //  subscriber.subscribe(publisher.getTopic());
-        
+
        this.setID(subscriber.getId());
        this.score.setId(subscriber.getId());
        run();
     }
-    
+
    private void printMenu(){
         System.out.println("======================================");
         System.out.println("Subscriber: " + subscriber.getId());
@@ -155,7 +160,7 @@ public class Jugador {
         System.out.println("pasar");
         System.out.println("salida mutua");
         System.out.println("mensajes");
-        System.out.println("recargar");  
+        System.out.println("recargar");
         System.out.println("ver mis personajes");
         System.out.println("comodin");
         System.out.println("obtener log");
@@ -163,14 +168,14 @@ public class Jugador {
         System.out.println("jugador estatus");
         System.out.println("ranking");
         System.out.println("======================================");
-   
+
    }
    private void run() throws InterruptedException{
        Invoker invoker = new Invoker();
        ICommand comando;
-       boolean comodin = false;
+       String temelegido;
        LocalDateTime locaDate = LocalDateTime.now();
-       
+
         while(true){
             printMenu();
             String option = scan.nextLine();
@@ -178,7 +183,7 @@ public class Jugador {
                 //Crear guerreros
                 case "crear guerreros":
                     SuperFactory sf = new SuperFactory();
-                    
+
                     System.out.println("Debe crear 4 guerreros");
                     for (int i=1; i<=2;i++){
                         System.out.println("-----------------------------------");
@@ -204,7 +209,7 @@ public class Jugador {
                         guerreros.add(g);
                     }
                     System.out.println("Guerreros creados con éxito");
-                   
+
                     break;
                 //Crear juego nuevo
                 case "crear juego nuevo":
@@ -215,7 +220,7 @@ public class Jugador {
                     Thread.sleep(3000);
                     if(!publisher.isConnected()){
                         System.out.println("No se pudo crear el juego");
-                        System.exit(0);
+
                     }else{
                         subscriber.subscribe(topic);
                         System.out.println("Juego creado con éxito");
@@ -225,8 +230,8 @@ public class Jugador {
                         System.out.println("No se pudo crear el juego");
                     }
                     actual=true;
-                    
-                  
+
+
                     break;
                 //Unirse a juego existente
                 case "unirse a juego":
@@ -234,7 +239,7 @@ public class Jugador {
                     System.out.println("----------------------------------");
                     this.subscriber.askForTopics();
                     Thread.sleep(1000);
-                    
+
                     for (String key : topics.keySet()){
                         if(subscriber.getSubscriptions().contains(key)){
                             this.topics.remove(key);
@@ -248,7 +253,7 @@ public class Jugador {
                     if(topics.containsKey(temp)){
                         subscriber.subscribe(temp);
                         this.topic=temp;
-                        
+
                     }
                     actual=false;
                     break;
@@ -268,20 +273,44 @@ public class Jugador {
                             ArrayList<Double> daño = obtenerDañoArma(guerrero,numArma);
                             comando = new AtaqueCommand(subscriber,daño,topic,guerrero.getNombre(),guerrero.getAtaques().get(numArma).getNombre());
                             invoker.execute(comando);
-                            System.out.println("El ataque ha sido exitoso");    } 
+                            System.out.println("El ataque ha sido exitoso");    }
                         actual=false;
-                        
+
                     }
-                    
+
                     }
                     else{
                         System.out.println("No es su turno");
                     }
-                 
+
                     break;
                 case "seleccionar jugador":
+                    System.out.println("Escoja el numero del guerrero que desea ver: ");
+                    for(int i=0; i<guerreros.size();i++){
+                        System.out.println(i+1+" "+guerreros.get(i).getNombre());
+                    }
+                    temelegido = scan.nextLine();
+                    try{
+                        comando = new SeleccionarJugador(subscriber,temelegido);
+                        invoker.execute(comando);
+                    }
+                    catch(Exception e){
+                        System.out.println("Debe escoger entre las opciones anteriores");
+                        e.printStackTrace();
+
+                    }
                     break;
                 case "rendirse":
+                    try{
+                        comando = new Rendirse(subscriber,this.topic);
+                        invoker.execute(comando);
+                        //System.exit(0);
+                    }
+                    catch(Exception e){
+                        System.out.println("Debe escoger entre las opciones anteriores");
+                        e.printStackTrace();
+
+                    }
                     break;
                 case "pasar":
                     if(actual){
@@ -294,6 +323,18 @@ public class Jugador {
                     }
                     break;
                 case "salida mutua":
+                    try{
+                        
+                        comando = new SalidaMutua(subscriber,this.topic,"El otro jugador quiere hacer salida mutua, aceptas [y/n]:");
+                        invoker.execute(comando);
+                    }
+                    catch(Exception e){
+                        System.out.println("Debe escoger entre las opciones anteriores");
+                        e.printStackTrace();
+
+                    }
+
+
                     break;
                 case "mensajes":
                     System.out.println("\t-------------MENSAJES-------------");
@@ -316,13 +357,30 @@ public class Jugador {
                             System.out.println("Comando invalido");
                             break;
                     }
-                    
-                    
+
+
                     break;
                 case "recargar":
+                    System.out.println("Escoja el numero del guerrero que desea recargarle las armas: ");
+                    for(int i=0; i<guerreros.size();i++){
+                        
+                        System.out.println(i+1+" "+guerreros.get(i).getNombre());
+                    }
+                    temelegido = scan.nextLine();
+                    try{
+                        comando = new RecargaAtaque(subscriber,temelegido);
+                        invoker.execute(comando);
+                    }
+                    catch(Exception e){
+                        System.out.println("Debe escoger entre las opciones anteriores");
+                        e.printStackTrace();
+
+                    }
+
+                    subscriber.getClient().guerreros.get(0).getAtaques().get(0).getEstado();
                     break;
                 case "ver mis personajes":
-                   
+
                     for(Guerrero gue: guerreros){
                          System.out.println("\t------------------------------------------");
                         String estado;
@@ -383,7 +441,7 @@ public class Jugador {
                                 armas.add(guee.getAtaques().get(arma2).getNombre());
                                 break;
                         }
-                        
+
                         comando = new Comodin(this.subscriber,this.topic,daño1,daño2,guerreros,armas);
                         invoker.execute(comando);
                         System.out.println("Comodin utilizado con exito");
@@ -392,7 +450,7 @@ public class Jugador {
                     }
                     else{
                         System.out.println("Comodin no disponible");
-                    } 
+                    }
                     }
                     else{
                         System.out.println("No es su turno");
@@ -417,7 +475,7 @@ public class Jugador {
                     break;
                 case "jugador estatus":
                     ScoreMessage m1 =new ScoreMessage(topic,this.subscriber.getId());
-                    
+
                     this.subscriber.sendMessage(m1);
                     Thread.sleep(5000);
                     System.out.println("Ganadas: "+this.scoreOtroJugador.getGanes());
@@ -433,9 +491,11 @@ public class Jugador {
                     Thread.sleep(5000);
                     quick_srt(ranking, 0, ranking.size()-1);
                     System.out.println("\t----------RANKING DE JUGADORES----------------");
-                    int i=1;
-                    for(Score rank: ranking){
-                        System.out.println(i+". Jugador: "+rank.getId()+" ganes: "+rank.getGanes());
+                    int cont=1;
+                    for(int i = ranking.size()-1;i>=0;i--){
+                        
+                        System.out.println(cont+". Jugador: "+ranking.get(i).getId()+" ganes: "+ranking.get(i).getGanes());
+                        cont++;
                     }
                     break;
                 default:
@@ -488,7 +548,7 @@ public class Jugador {
             return guerrero;
 
     }
-    
+
      public int escogerArma(Guerrero guerrero){
             int escogida = -1;
             System.out.println("Escoja el número de arma que desea usar");
@@ -509,13 +569,9 @@ public class Jugador {
                 System.out.println("Error al realizar el ataque");
             }
             return escogida;
-     }  
+     }
      public ArrayList<Double> obtenerDañoArma(Guerrero guerrero,int escogida){
          ArrayList<Double> daño = guerrero.getDamage().get(escogida);
          return daño;
      }
     }
-    
-    
-    
-

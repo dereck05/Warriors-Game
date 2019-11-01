@@ -19,6 +19,7 @@ import ServerImp.Message.WarriorsRequestMessage;
 import ServerImp.Message.WarriorsTopicsMessage;
 import Model.Client.SubscriberClient;
 import Model.Client.Jugador;
+import ServerImp.Message.ExitMessage;
 import Model.Guerrero;
 import ServerImp.Message.AtaqueMessage;
 import ServerImp.Message.ChatMessage;
@@ -28,12 +29,12 @@ import ServerImp.Message.LogMessage;
 import ServerImp.Message.PasarMessage;
 import ServerImp.Message.RankingMessage;
 import ServerImp.Message.ScoreMessage;
-
+import ServerImp.Message.SalidaMutuaMessage;
 
 public class WarriorsSubscriber extends ASubscriber{
     private List<FeedMessage> feed;
     Jugador client;
-    
+
     public WarriorsSubscriber(Jugador client) throws IOException{
         super();
         this.feed = new ArrayList();
@@ -43,6 +44,7 @@ public class WarriorsSubscriber extends ASubscriber{
     public List<FeedMessage> getFeed() {
         return feed;
     }
+    
 
 
 
@@ -55,17 +57,17 @@ public class WarriorsSubscriber extends ASubscriber{
     public void setClient(Jugador client) {
         this.client = client;
     }
-    
-    
-    
+
+
+
     @Override
     public void askForTopics(){
         WarriorsRequestMessage m = new WarriorsRequestMessage();
         m.setRequestId(0);
-        
+
         sendMessage(m);
     }
-    
+
     @Override
     public void sendMessage(AMessage message) {
         try {
@@ -86,12 +88,20 @@ public class WarriorsSubscriber extends ASubscriber{
             if(this.isConnected())
                 this.setId(m.getId());
         }
+        if(message instanceof ExitMessage){
+            ExitMessage m = (ExitMessage) message;
+            if (m.getJugador().equals(this.getId())==false){
+                System.out.println(m.getMensaje());
+            }
+
+        }
+
         //Jugadores
         if(message instanceof WarriorsTopicsMessage){
             WarriorsTopicsMessage m = (WarriorsTopicsMessage) message;
             this.client.topics = m.getTopics();
 
-            
+
         }
         //Jugadores
         if(message instanceof WarriorsRequestMessage){
@@ -99,10 +109,10 @@ public class WarriorsSubscriber extends ASubscriber{
             System.out.println(m.getRequestString());
             switch(m.getRequestId()){
                 case 0:
-                    
+
                     break;
-                
-                    
+
+
             }
         }
         if (message instanceof ChatMessage){
@@ -112,14 +122,14 @@ public class WarriorsSubscriber extends ASubscriber{
                 this.client.mensajes.put(m.getJugador(), m.getContent());
             }
         }
-        
+
         if(message instanceof AtaqueMessage){
            // Fuego-Aire-Agua-Magia blanca-Magia negra-Electricidad-Hielo-Acid-Espiritualidad-Hierro
             AtaqueMessage m = (AtaqueMessage) message;
             if(m.getJugador().equals(this.getId())==false){
                 rebajarVida(m.getDaño());
                 evaluarPerdida(m.getTopic());
-                
+
                 this.client.actual=true;
 
         }
@@ -129,7 +139,7 @@ public class WarriorsSubscriber extends ASubscriber{
                 rebajarVida(m.getDaño());
                 rebajarVida(m.getDaño1());
                 evaluarPerdida(m.getTopic());
-                
+
                 this.client.actual=true;
             }
         }
@@ -177,7 +187,15 @@ public class WarriorsSubscriber extends ASubscriber{
                 }
             }
         }
-        
+        if(message instanceof SalidaMutuaMessage){
+            SalidaMutuaMessage m = (SalidaMutuaMessage)message;
+            if(m.getJugador().equals(this.getId())==false){
+                System.out.println(m.getMsg());
+                
+            }
+            
+        }
+
     }
 
     @Override
@@ -186,10 +204,10 @@ public class WarriorsSubscriber extends ASubscriber{
         m.setRequestId(1);
         m.setRequestString(topic);
         m.setScore(client.getScore());
-        
-        
+
+
         sendMessage(m);
-        
+
         this.addSubscription(topic);
     }
 
@@ -201,7 +219,7 @@ public class WarriorsSubscriber extends ASubscriber{
         m.setRequestString(topic);
         try {
             this.intermediate.sendMessage(m);
-            
+
         } catch (IOException ex) {
             Logger.getLogger(WarriorsSubscriber.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -209,11 +227,11 @@ public class WarriorsSubscriber extends ASubscriber{
     public void rebajarVida(ArrayList<Double> daño){
         Double porcentajeDaño = 0.0;
         for(int i=0; i<client.getGuerreros().size();i++){
-        Double rebaja;                   
+        Double rebaja;
         Double vidaActual = client.getGuerreros().get(i).getVida();
         switch(client.getGuerreros().get(i).getTipo()){
 
-            case "fuego":   
+            case "fuego":
                 rebaja = daño.get(0);
                 porcentajeDaño += rebaja;
                 client.getGuerreros().get(i).setVida(vidaActual-rebaja);
@@ -282,10 +300,11 @@ public class WarriorsSubscriber extends ASubscriber{
     public void evaluarPerdida(String topic){
         boolean perdida = true;
         int i = 0;
-        while (perdida){
+        while (i < client.getGuerreros().size()){
             if(client.getGuerreros().get(i).getVida()>0){
                 perdida = false;
             }
+            i++;
         }
         if(perdida){
             client.getScore().addPerdida();
