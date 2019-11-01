@@ -19,6 +19,7 @@ import Model.SuperFactory;
 import ServerImp.Message.AtaqueMessage;
 import ServerImp.Message.FeedMessage;
 import ServerImp.Message.LogMessage;
+import ServerImp.Message.RankingMessage;
 import ServerImp.Message.ScoreMessage;
 import ServerImp.Publisher.WarriorsPublisher;
 import ServerImp.Subscriber.WarriorsSubscriber;
@@ -52,6 +53,7 @@ public class Jugador {
     public  Map<String,Integer> topics;
     public ArrayList<String>logs;
     private Score scoreOtroJugador;
+    private static ArrayList<Score> ranking;
     
     public static void main(String[] args) throws InterruptedException {
         try {
@@ -80,6 +82,14 @@ public class Jugador {
         this.guerreros = new ArrayList<Guerrero>();
         this.score = new Score();
         this.status = "activo";
+    }
+
+    public ArrayList<Score> getRanking() {
+        return ranking;
+    }
+
+    public void setRanking(ArrayList<Score> ranking) {
+        this.ranking = ranking;
     }
 
     public Score getScoreOtroJugador() {
@@ -128,8 +138,8 @@ public class Jugador {
       //  subscriber.subscribe(publisher.getTopic());
         
        this.setID(subscriber.getId());
-        
-        run();
+       this.score.setId(subscriber.getId());
+       run();
     }
     
    private void printMenu(){
@@ -151,6 +161,7 @@ public class Jugador {
         System.out.println("obtener log");
         System.out.println("mi estatus");
         System.out.println("jugador estatus");
+        System.out.println("ranking");
         System.out.println("======================================");
    
    }
@@ -390,7 +401,7 @@ public class Jugador {
                 case "obtener log":
                     LogMessage m =new LogMessage(topic,this.subscriber.getId());
                     this.subscriber.sendMessage(m);
-                    Thread.sleep(5000);
+                    Thread.sleep(3000);
                     System.out.println("\t----------------jugador estatus---------------------");
                     for (String log : logs){
                         System.out.println(log);
@@ -408,7 +419,7 @@ public class Jugador {
                     ScoreMessage m1 =new ScoreMessage(topic,this.subscriber.getId());
                     
                     this.subscriber.sendMessage(m1);
-                    Thread.sleep(3000);
+                    Thread.sleep(5000);
                     System.out.println("Ganadas: "+this.scoreOtroJugador.getGanes());
                     System.out.println("Perdidas: "+this.scoreOtroJugador.getPerdidas());
                     System.out.println("Ataques exitosos: "+this.scoreOtroJugador.getAtaquesExitosos());
@@ -416,10 +427,49 @@ public class Jugador {
                     System.out.println("Rendiciones: "+this.scoreOtroJugador.getRendiciones());
                     System.out.println("Muertes: "+this.scoreOtroJugador.getMuertes());
                     break;
+                case "ranking":
+                    RankingMessage m2 = new RankingMessage(topic);
+                    this.subscriber.sendMessage(m2);
+                    Thread.sleep(5000);
+                    quick_srt(ranking, 0, ranking.size()-1);
+                    System.out.println("\t----------RANKING DE JUGADORES----------------");
+                    int i=1;
+                    for(Score rank: ranking){
+                        System.out.println(i+". Jugador: "+rank.getId()+" ganes: "+rank.getGanes());
+                    }
+                    break;
                 default:
                     System.out.println("opción invalida");
             }
         }}
+     public static void quick_srt(ArrayList<Score> ranking,int low,int n){
+      int lo = low;
+      int hi = n;
+      if (lo >= n) {
+          return;
+      }
+      int mid = ranking.get((lo + hi) / 2).getGanes();
+      while (lo < hi) {
+          while (lo<hi && ranking.get(lo).getGanes() < mid) {
+              lo++;
+          }
+          while (lo<hi && ranking.get(hi).getGanes() > mid) {
+              hi--;
+          }
+          if (lo < hi) {
+              Score T = ranking.get(lo);
+              ranking.set(lo, ranking.get(hi));
+              ranking.set(hi, T);
+          }
+      }
+      if (hi < lo) {
+          int T = hi;
+          hi = lo;
+          lo = T;
+      }
+      quick_srt(ranking, low, lo);
+      quick_srt(ranking, lo == low ? lo+1 : lo, n);
+   }
     public Guerrero escogerGuerreros(){
             Guerrero guerrero = null;
             for(int i=0; i<guerreros.size();i++){

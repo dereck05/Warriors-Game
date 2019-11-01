@@ -10,6 +10,7 @@ import ContentServer.AContentServer;
 import ContentServer.PublisherHandler;
 import ContentServer.SubscriberHandler;
 import Message.AMessage;
+import Model.Score;
 import ServerImp.Message.AtaqueMessage;
 import ServerImp.Message.ChatMessage;
 import ServerImp.Message.ComodinMessage;
@@ -21,24 +22,43 @@ import ServerImp.Message.GanarMessage;
 import ServerImp.Message.LogMessage;
 import ServerImp.Message.PasarMessage;
 import ServerImp.Message.PostMessage;
+import ServerImp.Message.RankingMessage;
 import ServerImp.Message.ScoreMessage;
 import ServerImp.Message.WarriorsRequestMessage;
 import ServerImp.Message.WarriorsTopicsMessage;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class WarriorsContentServer extends AContentServer{
-    
+    private HashMap<SubscriberHandler, Score> ranking;
     public WarriorsContentServer() throws IOException{
         super();
+        ranking = new HashMap<>();
         System.out.println("SERVER running");
     }
 
     @Override
     public void processSubMessage(AMessage message, SubscriberHandler handler) {
+        if(message instanceof RankingMessage){
+            RankingMessage m = (RankingMessage) message;
+            ArrayList<Score> rank = new ArrayList<Score>();
+            for(Score value: ranking.values()){
+                rank.add(value);
+            }
+            m.setRanking(rank);
+            PublisherHandler publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(m.getTopic())).findAny().orElse(null);
+            try {
+                publisher.sendMessage(m);
+            } catch (IOException ex) {
+                Logger.getLogger(WarriorsContentServer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         if(message instanceof ScoreMessage){
             ScoreMessage m = (ScoreMessage) message;
             PublisherHandler publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(m.getTopic())).findAny().orElse(null);
             try {
+                this.ranking.replace(handler, m.getSocre());
                 publisher.sendMessage(m);
             } catch (IOException ex) {
                 Logger.getLogger(WarriorsContentServer.class.getName()).log(Level.SEVERE, null, ex);
@@ -93,7 +113,7 @@ public class WarriorsContentServer extends AContentServer{
             }
         }
         if (message instanceof ComodinMessage){
-            System.out.println("Si entra comodin");
+           // System.out.println("Si entra comodin");
             ComodinMessage m = (ComodinMessage) message;
             
             PublisherHandler publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(m.getTopic())).findAny().orElse(null);
@@ -113,6 +133,8 @@ public class WarriorsContentServer extends AContentServer{
                         break;
                     //Unirse al juego
                     case 1:
+                        System.out.println(m.getScore());
+                        ranking.put(handler, m.getScore());
                         String topic = m.getRequestString();
                         this.registerSubscription(topic, handler);
                         PublisherHandler publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(topic)).findAny().orElse(null);
@@ -145,7 +167,7 @@ public class WarriorsContentServer extends AContentServer{
 
     @Override
     public void processPubMessage(AMessage message, PublisherHandler handler) {
-        if(message instanceof AtaqueMessage || message instanceof ComodinMessage || message instanceof ChatMessage || message instanceof GanarMessage || message instanceof PasarMessage || message instanceof LogMessage || message instanceof ScoreMessage){
+        if(message instanceof AtaqueMessage || message instanceof ComodinMessage || message instanceof ChatMessage || message instanceof GanarMessage || message instanceof PasarMessage || message instanceof LogMessage || message instanceof ScoreMessage || message instanceof RankingMessage){
             try {
                 // System.out.println("???");
                 this.broadcastMessageSub(message, handler.getTopic());

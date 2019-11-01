@@ -16,7 +16,7 @@ public class Score {
     private int ganes;
     private int perdidas;
     private int rendiciones;
-    
+    private String id;
     
     public Score(){
         this.ataqueExitoso = 0;
@@ -62,4 +62,13 @@ public class Score {
     public int getRendiciones(){
         return this.rendiciones;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+    
 }

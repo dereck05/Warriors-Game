@@ -25,6 +25,7 @@ import ServerImp.Message.ComodinMessage;
 import ServerImp.Message.GanarMessage;
 import ServerImp.Message.LogMessage;
 import ServerImp.Message.PasarMessage;
+import ServerImp.Message.RankingMessage;
 import ServerImp.Message.ScoreMessage;
 import java.time.LocalDate;
 
@@ -88,6 +89,7 @@ public class WarriorsPublisher extends APublisher{
             this.setConnected(m.isAcceptedConnection());
             //System.out.println(m.getConnMessage());
         }
+
         if (message instanceof LogMessage){
             LogMessage m = (LogMessage) message;
             m.setLogs(logs);
@@ -129,7 +131,7 @@ public class WarriorsPublisher extends APublisher{
             
             this.publish(message);
         }
-        if(message instanceof GanarMessage || message instanceof ScoreMessage){
+        if(message instanceof GanarMessage || message instanceof ScoreMessage || message instanceof RankingMessage){
             this.publish(message);
         }
 

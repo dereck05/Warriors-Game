@@ -26,6 +26,7 @@ import ServerImp.Message.ComodinMessage;
 import ServerImp.Message.GanarMessage;
 import ServerImp.Message.LogMessage;
 import ServerImp.Message.PasarMessage;
+import ServerImp.Message.RankingMessage;
 import ServerImp.Message.ScoreMessage;
 
 
@@ -118,6 +119,7 @@ public class WarriorsSubscriber extends ASubscriber{
             if(m.getJugador().equals(this.getId())==false){
                 rebajarVida(m.getDaño());
                 evaluarPerdida(m.getTopic());
+                
                 this.client.actual=true;
 
         }
@@ -127,6 +129,7 @@ public class WarriorsSubscriber extends ASubscriber{
                 rebajarVida(m.getDaño());
                 rebajarVida(m.getDaño1());
                 evaluarPerdida(m.getTopic());
+                
                 this.client.actual=true;
             }
         }
@@ -141,6 +144,9 @@ public class WarriorsSubscriber extends ASubscriber{
             if (m.getJugador().equals(this.getId())==false){
                 System.out.println(m.getContent());
                 client.getScore().addGane();
+                ScoreMessage m1 = new ScoreMessage(m.getTopic(),this.getId());
+                m1.setSocre(client.getScore());
+                this.sendMessage(m1);
             }
         }
         if(message instanceof PasarMessage){
@@ -149,6 +155,10 @@ public class WarriorsSubscriber extends ASubscriber{
                 System.out.println("El otro jugador a pasador de turno");
                 client.actual=true;
             }
+        }
+        if (message instanceof RankingMessage){
+            RankingMessage m = (RankingMessage) message;
+            client.setRanking(m.getRanking());
         }
         if(message instanceof ScoreMessage){
             ScoreMessage m = (ScoreMessage) message;
@@ -175,6 +185,7 @@ public class WarriorsSubscriber extends ASubscriber{
         WarriorsRequestMessage m = new WarriorsRequestMessage();
         m.setRequestId(1);
         m.setRequestString(topic);
+        m.setScore(client.getScore());
         
         
         sendMessage(m);
@@ -282,5 +293,8 @@ public class WarriorsSubscriber extends ASubscriber{
             GanarMessage m = new GanarMessage(topic,this.getId(),"Has ganado");
             this.sendMessage(m);
         }
+        ScoreMessage m1 = new ScoreMessage(topic,this.getId());
+        m1.setSocre(client.getScore());
+        this.sendMessage(m1);
     }
 }
