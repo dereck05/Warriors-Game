@@ -24,6 +24,7 @@ import ServerImp.Message.LogMessage;
 import ServerImp.Message.PasarMessage;
 import ServerImp.Message.PostMessage;
 import ServerImp.Message.RankingMessage;
+import ServerImp.Message.SalidaMutuaMessage;
 import ServerImp.Message.ScoreMessage;
 import ServerImp.Message.WarriorsRequestMessage;
 import ServerImp.Message.WarriorsTopicsMessage;
@@ -41,6 +42,17 @@ public class WarriorsContentServer extends AContentServer{
 
     @Override
     public void processSubMessage(AMessage message, SubscriberHandler handler) {
+        if(message instanceof SalidaMutuaMessage){
+            System.out.println("?????");
+            SalidaMutuaMessage m = (SalidaMutuaMessage) message;
+            PublisherHandler publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(m.getTopic())).findAny().orElse(null);
+            try {
+                publisher.sendMessage(m);
+            } catch (IOException ex) {
+                Logger.getLogger(WarriorsContentServer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        }
         if(message instanceof RankingMessage){
             RankingMessage m = (RankingMessage) message;
             ArrayList<Score> rank = new ArrayList<Score>();
@@ -66,7 +78,7 @@ public class WarriorsContentServer extends AContentServer{
             }
         }
         if(message instanceof AtaqueMessage){
-            System.out.println("Si entra");
+           // System.out.println("Si entra");
             AtaqueMessage m = (AtaqueMessage) message;
 
             PublisherHandler publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(m.getTopic())).findAny().orElse(null);
@@ -165,21 +177,25 @@ public class WarriorsContentServer extends AContentServer{
             }
         }
         if(message instanceof ExitMessage){
-            try {
+          
 
                 ExitMessage m = (ExitMessage) message;
                 m.setMensaje("El otro jugador se ha rendido.");
-                this.broadcastMessageSub(m, m.getTopic());
-
+                
+                PublisherHandler publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(m.getTopic())).findAny().orElse(null);
+            try {
+                publisher.sendMessage(m);
             } catch (IOException ex) {
                 Logger.getLogger(WarriorsContentServer.class.getName()).log(Level.SEVERE, null, ex);
             }
+
+
         }
     }
 
     @Override
     public void processPubMessage(AMessage message, PublisherHandler handler) {
-        if(message instanceof AtaqueMessage || message instanceof ComodinMessage || message instanceof ChatMessage || message instanceof GanarMessage || message instanceof PasarMessage || message instanceof LogMessage || message instanceof ScoreMessage || message instanceof RankingMessage){
+        if(message instanceof AtaqueMessage || message instanceof ComodinMessage || message instanceof ChatMessage || message instanceof GanarMessage || message instanceof PasarMessage || message instanceof LogMessage || message instanceof ScoreMessage || message instanceof RankingMessage|| message instanceof SalidaMutuaMessage || message instanceof ExitMessage){
             try {
                 // System.out.println("???");
                 this.broadcastMessageSub(message, handler.getTopic());

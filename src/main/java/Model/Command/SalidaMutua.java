@@ -21,18 +21,22 @@ public class SalidaMutua implements ICommand {
     private WarriorsSubscriber jugador;
     private String topic;
     private String asunto;
+    private int id;
   
-    public SalidaMutua(WarriorsSubscriber juego,String topic,String asunto) {
+    public SalidaMutua(WarriorsSubscriber juego,String topic,String asunto,int id) {
         this.jugador = juego;
         this.topic=topic;
         this.asunto=asunto;
+        this.id=id;
        
     }
     
     @Override
     public void execute(){
-        SalidaMutua mensaje = new SalidaMutua(this.jugador,this.topic,this.asunto);
-        //jugador.sendMessage(mensaje);
+        SalidaMutuaMessage mensaje = new SalidaMutuaMessage(this.topic,this.jugador.getId());
+        mensaje.setMsg(this.asunto);
+        mensaje.setId(id);
+        jugador.sendMessage(mensaje);
         
     };
 
@@ -58,6 +62,14 @@ public class SalidaMutua implements ICommand {
 
     public void setAsunto(String asunto) {
         this.asunto = asunto;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     

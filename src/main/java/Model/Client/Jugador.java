@@ -325,7 +325,8 @@ public class Jugador {
                 case "salida mutua":
                     try{
                         
-                        comando = new SalidaMutua(subscriber,this.topic,"El otro jugador quiere hacer salida mutua, aceptas [y/n]:");
+                        comando = new SalidaMutua(subscriber,this.topic,"El otro jugador quiere hacer salida mutua, aceptas [y/n]:",1);
+                        
                         invoker.execute(comando);
                     }
                     catch(Exception e){

@@ -30,6 +30,7 @@ import ServerImp.Message.PasarMessage;
 import ServerImp.Message.RankingMessage;
 import ServerImp.Message.ScoreMessage;
 import ServerImp.Message.SalidaMutuaMessage;
+import java.util.Scanner;
 
 public class WarriorsSubscriber extends ASubscriber{
     private List<FeedMessage> feed;
@@ -188,9 +189,46 @@ public class WarriorsSubscriber extends ASubscriber{
             }
         }
         if(message instanceof SalidaMutuaMessage){
+            Scanner scan = new Scanner(System.in);
             SalidaMutuaMessage m = (SalidaMutuaMessage)message;
             if(m.getJugador().equals(this.getId())==false){
-                System.out.println(m.getMsg());
+                switch(m.getId()){
+                    case 1:
+                        System.out.println(m.getMsg());
+                        System.out.println("¿Desea aceptar la sálida? y/n");
+                        String opcion=scan.nextLine();
+                        if(opcion=="y"){
+                            SalidaMutuaMessage m1 =  new SalidaMutuaMessage(m.getTopic(),m.getJugador());
+                            
+                            m1.setId(2);
+                            m1.setMsg("El otro jugador aceptó la salida mutua.");
+                            this.sendMessage(m1);
+                            try{
+                            Thread.sleep(5000);}
+                            catch(Exception e){
+                                
+                            }
+                            this.unsubscribe(m.getTopic());
+                        }
+                        else{
+                            SalidaMutuaMessage m1 =  new SalidaMutuaMessage(m.getTopic(),m.getJugador());
+                            
+                            m1.setId(3);
+                            m1.setMsg("El otro jugador no aceptó la salida mutua.");
+                            this.sendMessage(m1);
+                        }
+                        break;
+                    case 2:
+                        System.out.println(m.getMsg());
+                        this.unsubscribe(m.getTopic());
+                        break;
+                    case 3:
+                        System.out.println(m.getMsg());
+                        break;
+                       
+                
+                }
+                
                 
             }
             

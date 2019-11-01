@@ -22,10 +22,12 @@ import Model.Client.PublisherClient;
 import ServerImp.Message.AtaqueMessage;
 import ServerImp.Message.ChatMessage;
 import ServerImp.Message.ComodinMessage;
+import ServerImp.Message.ExitMessage;
 import ServerImp.Message.GanarMessage;
 import ServerImp.Message.LogMessage;
 import ServerImp.Message.PasarMessage;
 import ServerImp.Message.RankingMessage;
+import ServerImp.Message.SalidaMutuaMessage;
 import ServerImp.Message.ScoreMessage;
 import java.time.LocalDate;
 
@@ -95,6 +97,16 @@ public class WarriorsPublisher extends APublisher{
             m.setLogs(logs);
             this.publish(m);
         }
+        if(message instanceof SalidaMutuaMessage){
+            SalidaMutuaMessage m =(SalidaMutuaMessage) message;
+            date = LocalDate.now();
+            String log = "Comando: salida mutua, parametros(jugador: "+m.getJugador()+", salida mutua: "+m.getMsg()+"), fecha: "+date;
+            logs.add(log);
+            this.publish(message);
+                    
+            
+            
+        }
         if(message instanceof PasarMessage){
             PasarMessage m = (PasarMessage) message;
             date = LocalDate.now();
@@ -114,6 +126,13 @@ public class WarriorsPublisher extends APublisher{
             ChatMessage m= (ChatMessage) message;
             date = LocalDate.now();
             String log = "Comando: mensaje, parametros (jugador: "+m.getJugador()+", mensaje: "+m.getContent()+"), fecha: "+date;
+            logs.add(log);
+            this.publish(message);
+        }
+        if(message instanceof ExitMessage){
+            ExitMessage m = (ExitMessage) message;
+            date = LocalDate.now();
+            String log = "Comando: rendirse, parametros(rendirse: "+m.getJugador()+") fecha: "+date;
             logs.add(log);
             this.publish(message);
         }
