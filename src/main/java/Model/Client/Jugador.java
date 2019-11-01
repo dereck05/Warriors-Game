@@ -15,7 +15,7 @@ import Model.Command.RecargaAtaque;
 import Model.Command.Rendirse;
 import Model.Command.SalidaMutua;
 import Model.Command.SeleccionarJugador;
-import Mode.Command.PasoTurno;
+import Model.Command.PasoTurno;
 import Model.Guerrero;
 import Model.Personaje;
 import Model.Score;
@@ -304,7 +304,7 @@ public class Jugador {
                     try{
                         comando = new Rendirse(subscriber,this.topic);
                         invoker.execute(comando);
-                        System.exit(0);
+                        //System.exit(0);
                     }
                     catch(Exception e){
                         System.out.println("Debe escoger entre las opciones anteriores");
@@ -324,7 +324,9 @@ public class Jugador {
                     break;
                 case "salida mutua":
                     try{
-                        comando = new SalidaMutua(subscriber,this.topic);
+                        
+                        comando = new SalidaMutua(subscriber,this.topic,"El otro jugador quiere hacer salida mutua, aceptas [y/n]:");
+                        invoker.execute(comando);
                     }
                     catch(Exception e){
                         System.out.println("Debe escoger entre las opciones anteriores");
@@ -359,9 +361,10 @@ public class Jugador {
 
                     break;
                 case "recargar":
-                    System.out.println("Escoja el numero del guerrero que desea enviar a atacar: ");
+                    System.out.println("Escoja el numero del guerrero que desea recargarle las armas: ");
                     for(int i=0; i<guerreros.size();i++){
-                        System.out.println(i+1+" "+guerreros.get(i).toString());
+                        
+                        System.out.println(i+1+" "+guerreros.get(i).getNombre());
                     }
                     temelegido = scan.nextLine();
                     try{
@@ -488,9 +491,11 @@ public class Jugador {
                     Thread.sleep(5000);
                     quick_srt(ranking, 0, ranking.size()-1);
                     System.out.println("\t----------RANKING DE JUGADORES----------------");
-                    int i=1;
-                    for(Score rank: ranking){
-                        System.out.println(i+". Jugador: "+rank.getId()+" ganes: "+rank.getGanes());
+                    int cont=1;
+                    for(int i = ranking.size()-1;i>=0;i--){
+                        
+                        System.out.println(cont+". Jugador: "+ranking.get(i).getId()+" ganes: "+ranking.get(i).getGanes());
+                        cont++;
                     }
                     break;
                 default:
