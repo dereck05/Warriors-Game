@@ -28,8 +28,8 @@ public class RecargaAtaque implements ICommand {
 
     @Override
     public void execute(){
-        for(int i = 0 ; i < jugador.getJugador().getGuerreros().get(Integer.parseInt(this.id)-1).getAtaques().size();i++){
-            jugador.getJugador().getGuerreros().get(Integer.parseInt(this.id)-1).getAtaques().get(i).setEstado("activa");
+        for(int i = 0 ; i < jugador.getClient().getGuerreros().get(Integer.parseInt(this.id)-1).getAtaques().size();i++){
+            jugador.getClient().getGuerreros().get(Integer.parseInt(this.id)-1).getAtaques().get(i).setEstado("activa");
         }
         
         

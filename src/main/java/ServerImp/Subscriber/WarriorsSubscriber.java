@@ -29,7 +29,7 @@ import ServerImp.Message.LogMessage;
 import ServerImp.Message.PasarMessage;
 import ServerImp.Message.RankingMessage;
 import ServerImp.Message.ScoreMessage;
-
+import ServerImp.Message.SalidaMutuaMessage;
 
 public class WarriorsSubscriber extends ASubscriber{
     private List<FeedMessage> feed;
@@ -44,6 +44,7 @@ public class WarriorsSubscriber extends ASubscriber{
     public List<FeedMessage> getFeed() {
         return feed;
     }
+    
 
 
 
@@ -186,6 +187,14 @@ public class WarriorsSubscriber extends ASubscriber{
                 }
             }
         }
+        if(message instanceof SalidaMutuaMessage){
+            SalidaMutuaMessage m = (SalidaMutuaMessage)message;
+            if(m.getJugador().equals(this.getId())==false){
+                System.out.println(m.getMsg());
+                
+            }
+            
+        }
 
     }
 
@@ -291,10 +300,11 @@ public class WarriorsSubscriber extends ASubscriber{
     public void evaluarPerdida(String topic){
         boolean perdida = true;
         int i = 0;
-        while (perdida){
+        while (i < client.getGuerreros().size()){
             if(client.getGuerreros().get(i).getVida()>0){
                 perdida = false;
             }
+            i++;
         }
         if(perdida){
             client.getScore().addPerdida();
