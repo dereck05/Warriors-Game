@@ -6,29 +6,27 @@
 package ServerImp.Message;
 
 import Message.AMessage;
+import java.util.ArrayList;
 
 /**
  *
  * @author maryp
  */
-public class ChatMessage extends AMessage{
-    private String asunto;
-    private String content;
+public class LogMessage extends AMessage{
+    private ArrayList<String> logs;
     private String jugador;
-    public ChatMessage(String topic, String content,String jugador) {
+    public LogMessage(String topic, String jugador) {
         super(topic);
-        this.content=content;
+        logs = new ArrayList<String>();
         this.jugador=jugador;
-        
     }
 
-
-    public String getContent() {
-        return content;
+    public ArrayList<String> getLogs() {
+        return logs;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setLogs(ArrayList<String> logs) {
+        this.logs = logs;
     }
 
     public String getJugador() {
@@ -38,14 +36,5 @@ public class ChatMessage extends AMessage{
     public void setJugador(String jugador) {
         this.jugador = jugador;
     }
-
-    public String getAsunto() {
-        return asunto;
-    }
-
-    public void setAsunto(String asunto) {
-        this.asunto = asunto;
-    }
-    
     
 }

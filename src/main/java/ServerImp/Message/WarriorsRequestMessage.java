@@ -6,11 +6,13 @@
 package ServerImp.Message;
 
 import Message.AMessage;
+import Model.Score;
 
 
 public class WarriorsRequestMessage extends AMessage{
     private int RequestId;
     private String RequestString;
+    private Score score;
     
     public WarriorsRequestMessage(){
         super("Request");
@@ -30,6 +32,14 @@ public class WarriorsRequestMessage extends AMessage{
 
     public void setRequestString(String RequestString) {
         this.RequestString = RequestString;
+    }
+
+    public Score getScore() {
+        return score;
+    }
+
+    public void setScore(Score score) {
+        this.score = score;
     }
     
     

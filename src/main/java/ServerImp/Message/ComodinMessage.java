@@ -6,20 +6,19 @@
 package ServerImp.Message;
 
 import Message.AMessage;
-import Model.Ataque;
-import Model.Guerrero;
 import java.util.ArrayList;
 
 /**
  *
  * @author maryp
  */
-public class AtaqueMessage extends AMessage {
+public class ComodinMessage extends AMessage{
     private ArrayList<Double> daño;
+    private ArrayList<Double> daño1;
     private String jugador;
-    private String guerrero;
-    private String arma;
-    public AtaqueMessage(String topic,String pJugador) {
+    private ArrayList<String> guerreros;
+    private ArrayList<String> armas;
+    public ComodinMessage(String topic,String pJugador) {
         super(topic);
         this.jugador=pJugador;
     }
@@ -39,19 +38,24 @@ public class AtaqueMessage extends AMessage {
     public void setJugador(String jugador) {
         this.jugador = jugador;
     }
-    public String getGuerrero(){
-        return this.guerrero;
-    }
-    public void setGuerrero(String guerrero){
-        this.guerrero=guerrero;
-    }
-    public String getArma(){
-        return this.arma;
-    }
-    public void setArma(String arma){
-        this.arma=arma;
+
+    public ArrayList<Double> getDaño1() {
+        return daño1;
     }
 
-    
-    
+    public void setDaño1(ArrayList<Double> daño1) {
+        this.daño1 = daño1;
+    }
+    public ArrayList<String> getGuerreros(){
+        return this.guerreros;
+    }
+    public void setGuerreros(ArrayList<String> guerreros){
+        this.guerreros=guerreros;
+    }
+    public ArrayList<String> getArmas(){
+        return this.armas;
+    }
+    public void setArmas(ArrayList<String> armas){
+        this.armas=armas;
+    }
 }

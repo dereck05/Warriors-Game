@@ -19,42 +19,48 @@ import ServerImp.ContentServer.WarriorsContentServer;
 import ServerImp.Message.FeedMessage;
 import ServerImp.Message.WarriorsRequestMessage;
 import Model.Client.PublisherClient;
+import ServerImp.Message.AtaqueMessage;
+import ServerImp.Message.ChatMessage;
+import ServerImp.Message.ComodinMessage;
+import ServerImp.Message.GanarMessage;
+import ServerImp.Message.LogMessage;
+import ServerImp.Message.PasarMessage;
+import ServerImp.Message.RankingMessage;
+import ServerImp.Message.ScoreMessage;
+import java.time.LocalDate;
 
 
 public class WarriorsPublisher extends APublisher{
-    private ArrayList<String> mensajes;
+    private ArrayList<String> logs;
     private int subscriberCount = 0;
    // private PublisherClient client;
 
     public WarriorsPublisher(String topic) throws IOException{
         super(topic);
-        mensajes = new ArrayList();
+        logs = new ArrayList();
         //this.client = client;
     }
 
-    public ArrayList<String> getPosts() {
-        return mensajes;
-    }
 
     public int getSubscriberCount() {
         return subscriberCount;
     }
 
-    public void addMensajes(String m){
-        this.mensajes.add(m);
+    public void addLog(String m){
+        this.logs.add(m);
     }
     
-    public ArrayList<String> getMensajes(){
-        return this.mensajes;
+    public ArrayList<String> getLogs(){
+        return this.logs;
     }
     
     /*
-    public void buildPost(String content){
+    public void buildLog(){
         PostMessage newPost = new PostMessage(this.getTopic(), content);
         this.posts.add(newPost);
         publish(newPost);
-    }
-    */
+    }*/
+    
     public void quit(){
         try {
             WarriorsRequestMessage m = new WarriorsRequestMessage();
@@ -77,12 +83,58 @@ public class WarriorsPublisher extends APublisher{
 
     @Override
     public void receivedMessage(AMessage message) {
-       
+       LocalDate date;
         if(message instanceof WarriorsConMessage){
             WarriorsConMessage m = (WarriorsConMessage) message;
             this.setConnected(m.isAcceptedConnection());
-            System.out.println(m.getConnMessage());
+            //System.out.println(m.getConnMessage());
         }
+
+        if (message instanceof LogMessage){
+            LogMessage m = (LogMessage) message;
+            m.setLogs(logs);
+            this.publish(m);
+        }
+        if(message instanceof PasarMessage){
+            PasarMessage m = (PasarMessage) message;
+            date = LocalDate.now();
+            String log = "Comando: pasar, parametros(jugador: "+m.getJugador()+", pasar: paso turno), fecha: "+date;
+            logs.add(log);
+            this.publish(message);
+        
+        }
+        if(message instanceof AtaqueMessage){
+            AtaqueMessage m = (AtaqueMessage) message;
+            date = LocalDate.now();
+            String log = "Comando: atacar, "+"parametros (jugador: "+m.getJugador()+",  guererro: "+m.getGuerrero()+", arma: "+m.getArma()+", daño: "+m.getDaño().toString()+"), fecha: "+date;
+            logs.add(log);
+            this.publish(message);
+        }
+        if(message instanceof ChatMessage){
+            ChatMessage m= (ChatMessage) message;
+            date = LocalDate.now();
+            String log = "Comando: mensaje, parametros (jugador: "+m.getJugador()+", mensaje: "+m.getContent()+"), fecha: "+date;
+            logs.add(log);
+            this.publish(message);
+        }
+        if(message instanceof ComodinMessage){
+            ComodinMessage m = (ComodinMessage) message;
+            date = LocalDate.now();
+            if(m.getGuerreros().size()==2){
+                String log= "Comando: comodin, parametros (jugador: "+m.getJugador()+", guerreros: Guerrero 1: "+m.getGuerreros().get(0)+", arma: "+m.getArmas().get(0)+", daño:"+m.getDaño()+". Guerrero 2: "+m.getGuerreros().get(1)+" arma: "+m.getArmas().get(1)+" daño: "+m.getDaño1()+"), fecha: "+date;
+                logs.add(log);
+            }
+            else{
+                 String log= "Comando: comodin, parametros (jugador: "+m.getJugador()+", guerrero: "+m.getGuerreros().get(0)+", arma 1 : "+m.getArmas().get(0)+", daño:"+m.getDaño()+", arma 2: "+m.getArmas().get(1)+" daño: "+m.getDaño1()+"), fecha: "+date;
+                 logs.add(log);
+            }
+            
+            this.publish(message);
+        }
+        if(message instanceof GanarMessage || message instanceof ScoreMessage || message instanceof RankingMessage){
+            this.publish(message);
+        }
+
         //Aquí va toda la lógica
         /*
         if(message instanceof FeedMessage){
@@ -119,7 +171,7 @@ public class WarriorsPublisher extends APublisher{
         //Suscriptores al juego
         if(message instanceof WarriorsRequestMessage){
             WarriorsRequestMessage m = (WarriorsRequestMessage) message;
-            System.out.println(m.getRequestString());
+           // System.out.println(m.getRequestString());
             switch(m.getRequestId()){
                 
                 case 1:

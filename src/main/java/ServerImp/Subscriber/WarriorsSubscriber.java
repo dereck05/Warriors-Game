@@ -20,13 +20,21 @@ import ServerImp.Message.WarriorsTopicsMessage;
 import Model.Client.SubscriberClient;
 import Model.Client.Jugador;
 import ServerImp.Message.ExitMessage;
+import Model.Guerrero;
+import ServerImp.Message.AtaqueMessage;
+import ServerImp.Message.ChatMessage;
+import ServerImp.Message.ComodinMessage;
+import ServerImp.Message.GanarMessage;
+import ServerImp.Message.LogMessage;
+import ServerImp.Message.PasarMessage;
+import ServerImp.Message.RankingMessage;
+import ServerImp.Message.ScoreMessage;
 
 
 public class WarriorsSubscriber extends ASubscriber{
-    private Jugador jugador;
     private List<FeedMessage> feed;
     Jugador client;
-    
+
     public WarriorsSubscriber(Jugador client) throws IOException{
         super();
         this.feed = new ArrayList();
@@ -37,13 +45,9 @@ public class WarriorsSubscriber extends ASubscriber{
         return feed;
     }
 
-    public Jugador getJugador() {
-        return jugador;
-    }
 
-    public void setJugador(Jugador jugador) {
-        this.jugador = jugador;
-    }
+
+
 
     public Jugador getClient() {
         return client;
@@ -52,17 +56,17 @@ public class WarriorsSubscriber extends ASubscriber{
     public void setClient(Jugador client) {
         this.client = client;
     }
-    
-    
-    
+
+
+
     @Override
     public void askForTopics(){
         WarriorsRequestMessage m = new WarriorsRequestMessage();
         m.setRequestId(0);
-        
+
         sendMessage(m);
     }
-    
+
     @Override
     public void sendMessage(AMessage message) {
         try {
@@ -88,15 +92,15 @@ public class WarriorsSubscriber extends ASubscriber{
             if (m.getJugador().equals(this.getId())==false){
                 System.out.println(m.getMensaje());
             }
-            
+
         }
-      
+
         //Jugadores
         if(message instanceof WarriorsTopicsMessage){
             WarriorsTopicsMessage m = (WarriorsTopicsMessage) message;
             this.client.topics = m.getTopics();
 
-            
+
         }
         //Jugadores
         if(message instanceof WarriorsRequestMessage){
@@ -104,31 +108,85 @@ public class WarriorsSubscriber extends ASubscriber{
             System.out.println(m.getRequestString());
             switch(m.getRequestId()){
                 case 0:
-                    
+
                     break;
-                
-                    
+
+
             }
         }
-        
-        if(message instanceof PostMessage){
-            
-            PostMessage m = (PostMessage) message;
-            boolean flag = false;
-            for(int i = 0; i < this.feed.size(); i++){
-                if(this.feed.get(i).getPost().getId().equals(m.getId())){
-                    this.feed.get(i).setPost(m);
-                    flag = true;
-                    break;
-                }  
+        if (message instanceof ChatMessage){
+            ChatMessage m = (ChatMessage) message;
+            if(m.getJugador().equals(this.getId())==false){
+                System.out.println(m.getAsunto());
+                this.client.mensajes.put(m.getJugador(), m.getContent());
             }
-            if(!flag){
-                this.feed.add(new FeedMessage(m));
-                System.out.println("Nuevo post de " + m.getTopic() + ": " + m.getContent());
-                return;
-            }   
-            System.out.println("Post actualizado de " + m.getTopic());
         }
+
+        if(message instanceof AtaqueMessage){
+           // Fuego-Aire-Agua-Magia blanca-Magia negra-Electricidad-Hielo-Acid-Espiritualidad-Hierro
+            AtaqueMessage m = (AtaqueMessage) message;
+            if(m.getJugador().equals(this.getId())==false){
+                rebajarVida(m.getDaño());
+                evaluarPerdida(m.getTopic());
+
+                this.client.actual=true;
+
+        }
+        }if(message instanceof ComodinMessage){
+            ComodinMessage m = (ComodinMessage) message;
+            if (m.getJugador().equals(this.getId())==false){
+                rebajarVida(m.getDaño());
+                rebajarVida(m.getDaño1());
+                evaluarPerdida(m.getTopic());
+
+                this.client.actual=true;
+            }
+        }
+        if(message instanceof LogMessage){
+            LogMessage m = (LogMessage) message;
+            if(m.getJugador().equals(this.getId())){
+                this.client.logs = m.getLogs();
+            }
+        }
+        if(message instanceof GanarMessage){
+            GanarMessage m = (GanarMessage) message;
+            if (m.getJugador().equals(this.getId())==false){
+                System.out.println(m.getContent());
+                client.getScore().addGane();
+                ScoreMessage m1 = new ScoreMessage(m.getTopic(),this.getId());
+                m1.setSocre(client.getScore());
+                this.sendMessage(m1);
+            }
+        }
+        if(message instanceof PasarMessage){
+            PasarMessage m = (PasarMessage) message;
+            if(m.getJugador().equals(this.getId())==false){
+                System.out.println("El otro jugador a pasador de turno");
+                client.actual=true;
+            }
+        }
+        if (message instanceof RankingMessage){
+            RankingMessage m = (RankingMessage) message;
+            client.setRanking(m.getRanking());
+        }
+        if(message instanceof ScoreMessage){
+            ScoreMessage m = (ScoreMessage) message;
+            if(m.getSocre()==null){
+              //  System.out.println("Pedir score");
+                if(m.getJugador().equals(this.getId())==false){
+                 //   System.out.println("Del otro jugador");
+                    m.setSocre(client.getScore());
+                    this.sendMessage(m);}
+            }
+            else{
+               // System.out.println("Recibir score");
+                if(m.getJugador().equals(this.getId())){
+                  //  System.out.println("Al que lo pidió");
+                    client.setScoreOtroJugador(m.getSocre());
+                }
+            }
+        }
+
     }
 
     @Override
@@ -136,10 +194,11 @@ public class WarriorsSubscriber extends ASubscriber{
         WarriorsRequestMessage m = new WarriorsRequestMessage();
         m.setRequestId(1);
         m.setRequestString(topic);
-        
-        
+        m.setScore(client.getScore());
+
+
         sendMessage(m);
-        
+
         this.addSubscription(topic);
     }
 
@@ -151,10 +210,100 @@ public class WarriorsSubscriber extends ASubscriber{
         m.setRequestString(topic);
         try {
             this.intermediate.sendMessage(m);
-            
+
         } catch (IOException ex) {
             Logger.getLogger(WarriorsSubscriber.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+    public void rebajarVida(ArrayList<Double> daño){
+        Double porcentajeDaño = 0.0;
+        for(int i=0; i<client.getGuerreros().size();i++){
+        Double rebaja;
+        Double vidaActual = client.getGuerreros().get(i).getVida();
+        switch(client.getGuerreros().get(i).getTipo()){
+
+            case "fuego":
+                rebaja = daño.get(0);
+                porcentajeDaño += rebaja;
+                client.getGuerreros().get(i).setVida(vidaActual-rebaja);
+                break;
+            case "aire":
+                rebaja = daño.get(1);
+                porcentajeDaño += rebaja;
+                client.getGuerreros().get(i).setVida(vidaActual-rebaja);
+                break;
+            case "agua":
+                rebaja = daño.get(2);
+                porcentajeDaño += rebaja;
+                client.getGuerreros().get(i).setVida(vidaActual-rebaja);
+                break;
+            case "magia blanca":
+                rebaja = daño.get(3);
+                porcentajeDaño += rebaja;
+                client.getGuerreros().get(i).setVida(vidaActual-rebaja);
+                break;
+            case "magia negra":
+                rebaja = daño.get(4);
+                client.getGuerreros().get(i).setVida(vidaActual-rebaja);
+                break;
+            case "electricidad":
+                rebaja = daño.get(5);
+                porcentajeDaño += rebaja;
+                client.getGuerreros().get(i).setVida(vidaActual-rebaja);
+                break;
+            case "hielo":
+                rebaja = daño.get(6);
+                porcentajeDaño += rebaja;
+                client.getGuerreros().get(i).setVida(vidaActual-rebaja);
+                break;
+            case "acid":
+                rebaja = daño.get(7);
+                porcentajeDaño += rebaja;
+                client.getGuerreros().get(i).setVida(vidaActual-rebaja);
+                break;
+            case "espiritualidad":
+                rebaja = daño.get(8);
+                porcentajeDaño += rebaja;
+                client.getGuerreros().get(i).setVida(vidaActual-rebaja);
+                break;
+            case "hierro":
+                rebaja = daño.get(9);
+                porcentajeDaño += rebaja;
+                client.getGuerreros().get(i).setVida(vidaActual-rebaja);
+                break;
+
+        }
+
+        if(client.getGuerreros().get(i).getVida()<=0){
+            client.getGuerreros().get(i).setVida(0.0);
+            client.getGuerreros().get(i).setActivo(false);
+            client.getScore().addMuerte();
+            System.out.println(client.getGuerreros().get(i).getNombre()+" ha muerto");
+        }
+        }
+        if(porcentajeDaño>=100){
+            client.getScore().addAtaqueExitoso();
+        }
+        else{
+            client.getScore().addAtaqueFracasado();
+        }
+    }
+    public void evaluarPerdida(String topic){
+        boolean perdida = true;
+        int i = 0;
+        while (perdida){
+            if(client.getGuerreros().get(i).getVida()>0){
+                perdida = false;
+            }
+        }
+        if(perdida){
+            client.getScore().addPerdida();
+            System.out.println("Has perdido");
+            GanarMessage m = new GanarMessage(topic,this.getId(),"Has ganado");
+            this.sendMessage(m);
+        }
+        ScoreMessage m1 = new ScoreMessage(topic,this.getId());
+        m1.setSocre(client.getScore());
+        this.sendMessage(m1);
+    }
 }

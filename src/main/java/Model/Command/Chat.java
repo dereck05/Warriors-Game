@@ -5,20 +5,31 @@
  */
 package Model.Command;
 
+import ServerImp.Message.ChatMessage;
 import ServerImp.Publisher.WarriorsPublisher;
+import ServerImp.Subscriber.WarriorsSubscriber;
 
 /**
  *
  * @author derec
  */
 public class Chat implements ICommand {
-    WarriorsPublisher juego;
-
-    public Chat(WarriorsPublisher juego) {
-        this.juego = juego;
+    private WarriorsSubscriber jugador;
+    private String topic;
+    private String asunto;
+    private String content;
+    public Chat(WarriorsSubscriber juego,String topic,String asunto,String content) {
+        this.jugador = juego;
+        this.topic=topic;
+        this.asunto=asunto;
+        this.content=content;
     }
     
     @Override
-    public void execute(){};
+    public void execute(){
+        ChatMessage c = new ChatMessage(topic, content,jugador.getId());
+        c.setAsunto(asunto);
+        jugador.sendMessage(c);
+    };
     
 }

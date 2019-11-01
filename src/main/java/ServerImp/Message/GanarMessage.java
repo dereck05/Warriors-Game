@@ -11,17 +11,14 @@ import Message.AMessage;
  *
  * @author maryp
  */
-public class ChatMessage extends AMessage{
-    private String asunto;
-    private String content;
-    private String jugador;
-    public ChatMessage(String topic, String content,String jugador) {
+public class GanarMessage extends AMessage {
+    String content;
+    String jugador;
+    public GanarMessage(String topic, String jugador,String content){
         super(topic);
         this.content=content;
         this.jugador=jugador;
-        
     }
-
 
     public String getContent() {
         return content;
@@ -38,14 +35,5 @@ public class ChatMessage extends AMessage{
     public void setJugador(String jugador) {
         this.jugador = jugador;
     }
-
-    public String getAsunto() {
-        return asunto;
-    }
-
-    public void setAsunto(String asunto) {
-        this.asunto = asunto;
-    }
-    
     
 }

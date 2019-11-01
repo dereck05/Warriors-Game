@@ -5,20 +5,55 @@
  */
 package Model.Command;
 
+import ServerImp.Message.ComodinMessage;
 import ServerImp.Publisher.WarriorsPublisher;
+import ServerImp.Subscriber.WarriorsSubscriber;
+import java.util.ArrayList;
 
 /**
  *
  * @author derec
  */
 public class Comodin  implements ICommand {
-    WarriorsPublisher juego;
+    private WarriorsSubscriber jugador;
+    private ArrayList<String> guerreros;
+    private ArrayList<String> armas;
+    private ArrayList<Double> daño1;
+    private ArrayList<Double> daño2;
+    private String topic;
+    public Comodin(WarriorsSubscriber juego,String topic,ArrayList<Double> daño1, ArrayList<Double> daño2,ArrayList<String> guerreros,ArrayList<String> armas) {
+        this.topic=topic;
+        this.jugador = juego;
+        this.daño1=daño1;
+        this.daño2=daño2;
+        this.guerreros=guerreros;
+        this.armas=armas;
+    }
 
-    public Comodin(WarriorsPublisher juego) {
-        this.juego = juego;
+    public ArrayList<Double> getDaño1() {
+        return daño1;
+    }
+
+    public void setDaño1(ArrayList<Double> daño1) {
+        this.daño1 = daño1;
+    }
+
+    public ArrayList<Double> getDaño2() {
+        return daño2;
+    }
+
+    public void setDaño2(ArrayList<Double> daño2) {
+        this.daño2 = daño2;
     }
     
     @Override
-    public void execute(){};
+    public void execute(){
+        ComodinMessage mensaje = new ComodinMessage(this.topic,jugador.getId());
+        mensaje.setDaño(daño1);
+        mensaje.setDaño1(daño2);
+        mensaje.setArmas(armas);
+        mensaje.setGuerreros(guerreros);
+        jugador.sendMessage(mensaje);
+    };
     
 }

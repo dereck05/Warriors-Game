@@ -9,6 +9,6 @@ package Model;
  *
  * @author derec
  */
-public interface IObject {
-    public void execute();
+public interface ILog {
+    public void realizarLog(String log);
 }
