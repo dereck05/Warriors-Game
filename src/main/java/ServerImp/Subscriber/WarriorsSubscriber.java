@@ -85,7 +85,10 @@ public class WarriorsSubscriber extends ASubscriber{
         }
         if(message instanceof ExitMessage){
             ExitMessage m = (ExitMessage) message;
-            System.out.println(m.getMensaje());
+            if (m.getJugador().equals(this.getId())==false){
+                System.out.println(m.getMensaje());
+            }
+            
         }
       
         //Jugadores

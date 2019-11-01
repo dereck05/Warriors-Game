@@ -10,6 +10,7 @@ import ContentServer.AContentServer;
 import ContentServer.PublisherHandler;
 import ContentServer.SubscriberHandler;
 import Message.AMessage;
+import ServerImp.Message.ExitMessage;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -72,6 +73,17 @@ public class WarriorsContentServer extends AContentServer{
                         m3.setRequestString("Subscriptor Perdido");
                         publisher.sendMessage(m3);
                 }
+            } catch (IOException ex) {
+                Logger.getLogger(WarriorsContentServer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        if(message instanceof ExitMessage){
+            try {
+                
+                ExitMessage m = (ExitMessage) message;
+                m.setMensaje("El otro jugador se ha rendido.");
+                this.broadcastMessageSub(m, m.getTopic());
+                
             } catch (IOException ex) {
                 Logger.getLogger(WarriorsContentServer.class.getName()).log(Level.SEVERE, null, ex);
             }

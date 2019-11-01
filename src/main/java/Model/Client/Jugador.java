@@ -11,6 +11,7 @@ import Model.Command.ICommand;
 import Model.Command.Invoker;
 import Model.Command.RecargaAtaque;
 import Model.Command.Rendirse;
+import Model.Command.SalidaMutua;
 import Model.Command.SeleccionarJugador;
 import Model.Guerrero;
 import Model.Personaje;
@@ -37,7 +38,7 @@ public class Jugador {
     private String id;
     private ArrayList<Guerrero> guerreros;
     private Score score;
-    private String status;
+    private Boolean status;
     private  Scanner scan;
     private String topic;
     public  Map<String,Integer> topics;
@@ -55,20 +56,20 @@ public class Jugador {
     public Jugador(){
         this.score= new Score();
         this.guerreros = new ArrayList<Guerrero>();
-        this.status="activo";
+        this.status=true;
     }
     public Jugador(String i, WarriorsPublisher pPublisher){
         this.id=i;
         this.score=new Score();
         this.guerreros = new ArrayList<Guerrero>();
         this.publisher= pPublisher;
-        this.status = "activo";
+        this.status = true;
     }
     public Jugador(String i){
         this.id = i;
         this.guerreros = new ArrayList<Guerrero>();
         this.score = new Score();
-        this.status = "activo";
+        this.status = true;
     }
     
     public void setID(String i){
@@ -80,7 +81,7 @@ public class Jugador {
     public void setScore(Score s){
         this.score = s;
     }
-    public void setStatus(String s){
+    public void setStatus(Boolean s){
         this.status = s;
     }
     public String getID(){
@@ -92,7 +93,7 @@ public class Jugador {
     public Score getScore(){
         return this.score;
     }
-    public String getStatus(){
+    public Boolean getStatus(){
         return this.status;
     }
     private void start() throws IOException, InterruptedException{     
@@ -134,7 +135,7 @@ public class Jugador {
        Invoker invoker = new Invoker();
        ICommand comando;
        String temelegido;
-        while(true){
+       while(true){
             printMenu();
             String option = scan.nextLine();
             switch(option){
@@ -178,7 +179,7 @@ public class Jugador {
                     Thread.sleep(3000);
                     if(!publisher.isConnected()){
                         System.out.println("No se pudo crear el juego");
-                        System.exit(0);
+                        
                     }else{
                         subscriber.subscribe(topic);
                         System.out.println("Juego creado con éxito");
@@ -305,6 +306,7 @@ public class Jugador {
                     try{
                         comando = new Rendirse(subscriber,this.topic);
                         invoker.execute(comando);
+                        System.exit(0);
                     }
                     catch(Exception e){
                         System.out.println("Debe escoger entre las opciones anteriores");
@@ -315,6 +317,16 @@ public class Jugador {
                 case "pasar":
                     break;
                 case "salida mutua":
+                    try{
+                        comando = new SalidaMutua(subscriber,this.topic);
+                    }
+                    catch(Exception e){
+                        System.out.println("Debe escoger entre las opciones anteriores");
+                        e.printStackTrace();
+
+                    }
+                    
+                       
                     break;
                 case "enviar mensaje":
                     break;

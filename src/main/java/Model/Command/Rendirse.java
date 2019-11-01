@@ -28,9 +28,9 @@ public class Rendirse implements ICommand {
     @Override
     public void execute(){
         ExitMessage mensaje = new ExitMessage(this.topic,this.jugador.getClient().getID());
-        mensaje.setMensaje("El usuario "+this.jugador.getClient().getID()+"se ha rendido.");
-        jugador.getClient().setStatus("Rendido");
         jugador.sendMessage(mensaje);
+        jugador.unsubscribe(topic);
+        
     };
     
 }

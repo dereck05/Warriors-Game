@@ -36,4 +36,5 @@ public class ExitMessage extends AMessage {
         
         this.mensaje = "";
     }
+    
 }

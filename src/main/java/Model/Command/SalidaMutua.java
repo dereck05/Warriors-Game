@@ -14,14 +14,17 @@ import ServerImp.Subscriber.WarriorsSubscriber;
  * @author derec
  */
 public class SalidaMutua implements ICommand {
-    private WarriorsPublisher juego;
-    private WarriorsSubscriber cliente;
-    
-    public SalidaMutua(WarriorsPublisher pJuego,WarriorsSubscriber cl){
-        this.juego=pJuego;
-        this.cliente = cl;
+    private WarriorsSubscriber jugador;
+    private String topic;
+    private String mensaje;
+    public SalidaMutua(WarriorsSubscriber pJugador,String topic){
+        this.jugador=pJugador;
+        this.topic=topic;
+        this.mensaje = "";
     }
     @Override
-    public void execute(){};
+    public void execute(){
+        
+    };
     
 }
