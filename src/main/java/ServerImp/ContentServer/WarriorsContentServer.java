@@ -43,7 +43,6 @@ public class WarriorsContentServer extends AContentServer{
     @Override
     public void processSubMessage(AMessage message, SubscriberHandler handler) {
         if(message instanceof SalidaMutuaMessage){
-            System.out.println("?????");
             SalidaMutuaMessage m = (SalidaMutuaMessage) message;
             PublisherHandler publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(m.getTopic())).findAny().orElse(null);
             try {
@@ -126,7 +125,6 @@ public class WarriorsContentServer extends AContentServer{
             }
         }
         if (message instanceof ComodinMessage){
-           // System.out.println("Si entra comodin");
             ComodinMessage m = (ComodinMessage) message;
 
             PublisherHandler publisher = this.publishers.stream().filter(pub -> pub.getTopic().equals(m.getTopic())).findAny().orElse(null);
@@ -146,7 +144,6 @@ public class WarriorsContentServer extends AContentServer{
                         break;
                     //Unirse al juego
                     case 1:
-                        System.out.println(m.getScore());
                         ranking.put(handler, m.getScore());
                         String topic = m.getRequestString();
                         this.registerSubscription(topic, handler);

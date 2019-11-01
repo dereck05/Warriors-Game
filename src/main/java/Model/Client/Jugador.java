@@ -24,6 +24,7 @@ import ServerImp.Message.AtaqueMessage;
 import ServerImp.Message.FeedMessage;
 import ServerImp.Message.LogMessage;
 import ServerImp.Message.RankingMessage;
+import ServerImp.Message.SalidaMutuaMessage;
 import ServerImp.Message.ScoreMessage;
 import ServerImp.Publisher.WarriorsPublisher;
 import ServerImp.Subscriber.WarriorsSubscriber;
@@ -58,7 +59,7 @@ public class Jugador {
     public ArrayList<String>logs;
     private Score scoreOtroJugador;
     private static ArrayList<Score> ranking;
-
+    public boolean salidaMutua;
     public static void main(String[] args) throws InterruptedException {
         try {
             Jugador client = new Jugador();
@@ -73,6 +74,7 @@ public class Jugador {
         this.guerreros = new ArrayList<Guerrero>();
         this.status=true;
         this.logs = new ArrayList<String>();
+        this.salidaMutua=false;
 
     }
     public Jugador(String i, WarriorsPublisher pPublisher){
@@ -81,12 +83,14 @@ public class Jugador {
         this.guerreros = new ArrayList<Guerrero>();
         this.publisher= pPublisher;
         this.status = true;
+        this.salidaMutua=false;
     }
     public Jugador(String i){
         this.id = i;
         this.guerreros = new ArrayList<Guerrero>();
         this.score = new Score();
         this.status = true;
+        this.salidaMutua=false;
     }
 
     public ArrayList<Score> getRanking() {
@@ -304,6 +308,13 @@ public class Jugador {
                     try{
                         comando = new Rendirse(subscriber,this.topic);
                         invoker.execute(comando);
+                        System.out.println("Te has rendido");
+                        score.addRendicion();
+                        Thread.sleep(40000);
+                        ScoreMessage m1 = new ScoreMessage(topic,subscriber.getId());
+                        m1.setSocre(this.getScore());
+                        subscriber.sendMessage(m1);
+                        subscriber.unsubscribe(topic);
                         //System.exit(0);
                     }
                     catch(Exception e){
@@ -323,17 +334,37 @@ public class Jugador {
                     }
                     break;
                 case "salida mutua":
-                    try{
+                        if(salidaMutua){
+                            System.out.println("¿Desea aceptar la sálida? y/n");
+                            String opcion=scan.nextLine();
+                            if(opcion.equals("y")){
+                                SalidaMutuaMessage m1 =  new SalidaMutuaMessage(topic,subscriber.getId());
+                            
+                                m1.setId(2);
+                                m1.setMsg("El otro jugador aceptó la salida mutua.");
+                                subscriber.sendMessage(m1);
+                                
+                                subscriber.unsubscribe(topic);
+                                System.out.println("Ambos han salido con éxito");
+                                this.salidaMutua=false;
+                            }
+                            else{
+                                SalidaMutuaMessage m1 =  new SalidaMutuaMessage(topic,subscriber.getId());
+                                
+                                m1.setId(3);
+                                m1.setMsg("El otro jugador no aceptó la salida mutua.");
+                                subscriber.sendMessage(m1);
+                                this.salidaMutua=false;
+                            }
+                        }
+                        else{
                         
-                        comando = new SalidaMutua(subscriber,this.topic,"El otro jugador quiere hacer salida mutua, aceptas [y/n]:",1);
+                        comando = new SalidaMutua(subscriber,this.topic,"El otro jugador quiere hacer salida mutua",1);
                         
                         invoker.execute(comando);
-                    }
-                    catch(Exception e){
-                        System.out.println("Debe escoger entre las opciones anteriores");
-                        e.printStackTrace();
+                        System.out.println("Esperando que el otro jugador conteste....");
+                        }
 
-                    }
 
 
                     break;

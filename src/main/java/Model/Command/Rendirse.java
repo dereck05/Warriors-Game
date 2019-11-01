@@ -29,7 +29,7 @@ public class Rendirse implements ICommand {
     public void execute(){
         ExitMessage mensaje = new ExitMessage(this.topic,this.jugador.getClient().getID());
         jugador.sendMessage(mensaje);
-        jugador.unsubscribe(topic);
+        
         
     };
     
